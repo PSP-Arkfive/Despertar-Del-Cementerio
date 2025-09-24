@@ -27,7 +27,3 @@ PRX_EXPORTS = exports.exp
 BUILD_PRX = 1
 
 include $(PSPSDK)/lib/build.mak
-
-#include $(ARKROOT)/common/make/global.mak
-#include ./build.mak
-#include $(ARKROOT)/common/make/beauty.mak
