@@ -1,0 +1,18 @@
+[submodule "CustmoIPL"]
+	path = CustmoIPL
+	url = https://github.com/PSP-Arkfive/CustomIPL/
+[submodule "CustomIPL"]
+	path = CustomIPL
+	url = https://github.com/PSP-Arkfive/CustomIPL/
+[submodule "BootLoadEx"]
+	path = BootLoadEx
+	url = https://github.com/PSP-Arkfive/BootLoadEx
+[submodule "ark-dev-sdk"]
+	path = ark-dev-sdk
+	url = https://github.com/PSP-Arkfive/ark-dev-sdk
+[submodule "TimeMachine"]
+	path = TimeMachine
+	url = https://github.com/PSP-Arkfive/Time-Machine
+[submodule "CFW"]
+	path = CFW
+	url = https://github.com/PSP-Arkfive/ARK-5
