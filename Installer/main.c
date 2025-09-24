@@ -17,8 +17,8 @@
 #include <kubridge.h>
 #include <vlf.h>
 
-#include <loader/dc/msipl/mainbinex/payload.h>
-#include <loader/dc/tmctrl/tmctrl.h>
+#include <../CustomIPL/MSIPL/mainbinex/payload.h>
+#include <../TimeMachine/TMCtrl660/tmctrl.h>
 #include "tm_msipl.h"
 #include "tm_mloader.h"
 #include "new_msipl.h"
