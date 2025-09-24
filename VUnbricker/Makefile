@@ -1,22 +1,33 @@
-release: all
+PSPSDK=$(shell psp-config --pspsdk-path)
+
 
 TARGET = resurrection
-OBJS = crt0.o main.o install.o nandoperations.o flash_format.o idstools.o DcManager.o pspDecrypt.o pspIplUpdate.o idsRegeneration.o imports.o
+OBJS = crt0.o main.o imports.o \
+	src/install.o \
+	src/nandoperations.o \
+	src/flash_format.o \
+	src/idstools.o \
+	libs/DcManager.o \
+	libs/pspDecrypt.o \
+	libs/pspIplUpdate.o \
+	libs/idsRegeneration.o \
 
-INCDIR = $(ARKROOT)/common/include $(ARKROOT)/libs/libvlf $(ARKROOT)/loader/perma/cipl/classic ../common/include
+INCDIR = include ../include $(ARKSDK)/include $(CIPLDIR)/ClassicIPL
 CFLAGS = -std=c99 -O2 -G0 -Wall -fshort-wchar -fno-pic -mno-check-zero-division
 CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS = $(CFLAGS) -c
 
-LIBDIR = $(ARKROOT)/libs
-LDFLAGS = -nostdlib -nodefaultlibs
-LIBS = -lpsppower -lpsprtc -lvlfgui -lvlfgu -lvlfutils -lvlflibc -lpspreg -lpspsystemctrl_user -lpspkubridge -lpspwlan -lpsppower
+LIBDIR = $(ARKSDK)/libs
+LDFLAGS = -nostartfiles
+LIBS = -lpsprtc -lvlfgui -lvlfgu -lvlfutils -lvlflibc -lpspreg -lpspsystemctrl_user -lpspkubridge -lpspwlan -lpsppower -lpspkernel
 
 PSP_FW_VERSION = 661
+PRX_EXPORTS = exports.exp
 
 BUILD_PRX = 1
 
-include $(ARKROOT)/common/make/global.mak
-PSPSDK=$(shell psp-config --pspsdk-path)
-include ./build.mak
-include $(ARKROOT)/common/make/beauty.mak
+include $(PSPSDK)/lib/build.mak
+
+#include $(ARKROOT)/common/make/global.mak
+#include ./build.mak
+#include $(ARKROOT)/common/make/beauty.mak

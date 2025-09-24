@@ -1,3 +1,7 @@
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdarg.h>
 #include <pspsdk.h>
 #include <pspkernel.h>
 #include <pspdebug.h>
@@ -7,16 +11,12 @@
 #include <pspreg.h>
 #include <psprtc.h>
 #include <psputils.h>
+
 #include <systemctrl.h>
 #include <kubridge.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdarg.h>
 
 #include <pspipl_update.h>
 #include <vlf.h>
-
 #include "dcman.h"
 #include "main.h"
 #include "install.h"
@@ -44,6 +44,9 @@ int last_percentage = -1;
 int last_time;
 char pg_text[20];
 char st_text[128];
+
+// TODO: move to pspsdk
+extern int scePowerRequestColdReset(int); // psppower.h
 
 int DoProgressUpdate(void *param)
 {

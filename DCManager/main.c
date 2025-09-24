@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <pspsdk.h>
 #include <pspkernel.h>
 #include <pspsysmem_kernel.h>
@@ -8,22 +11,18 @@
 #include <pspnand_driver.h>
 #include <pspidstorage.h>
 #include <pspdisplay_kernel.h>
-#include <systemctrl.h>
-#include <pspidstorage.h>
-#include <pspnand_driver.h>
 #include <pspsysreg.h>
-#include <pspidstorage.h>
 #include <pspthreadman_kernel.h>
-#include <pspcrypt.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cfwmacros.h>
+#include <systemctrl.h>
 
+#include "pspcrypt.h"
 #include "dcman.h"
 
 PSP_MODULE_INFO("DesCemManager", 0x1007, 10, 1);
 
+/*
 #define JAL_OPCODE    0x0C000000
 #define J_OPCODE    0x08000000
 #define SC_OPCODE    0x0000000C
@@ -39,6 +38,20 @@ PSP_MODULE_INFO("DesCemManager", 0x1007, 10, 1);
 #define REDIRECT_FUNCTION(a, f) _sw(J_OPCODE | (((u32)(f) >> 2)  & 0x03ffffff), a);  _sw(NOP, a+4);
 #define MAKE_DUMMY_FUNCTION0(a) _sw(0x03e00008, a); _sw(0x00001021, a+4);
 #define MAKE_DUMMY_FUNCTION1(a) _sw(0x03e00008, a); _sw(0x24020001, a+4);
+*/
+
+
+// TODO: PR these into pspsdk
+extern int sceSysconReceiveSetParam(int n, u8 *buf); // pspsyscon.h
+extern int sceIdStorageCreateLeaf(unsigned int leafid); // pspidstorage.h
+extern int sceIdStorage_driver_99ACCB71(u16 *leaves, int n); // sceIdStorageCreateAtomicLeaves? pspidstorage.h
+extern int sceIdStorageFormat(); // pspidstorage.h
+extern int sceIdStorageUnformat(); // pspidstorage.h
+extern int sceNandEraseBlock(u32 page); // pspnand_driver.h
+extern int sceNandWriteAccess(u32 page, u8 *user, u8 *spare, int, unsigned int); // pspnand_driver.h
+extern int sceNandReadExtraOnly(u32 page, u8 *block, int); // pspnand_driver.h
+extern int sceNandReadPagesRawAll(u32 page, u8 *block, void*, int); // pspnand_driver.h
+
 
 u32 tachyon, baryon, pommel, mb, fuseconfig, nandsize;
 u64 fuseid;
@@ -64,11 +77,11 @@ static void GetHardwareInfo()
     pommel = 0;
     mb = UNKNOWN;
 
-    u32 (*SysregGetTachyonVersion)() = sctrlHENFindFunction("sceLowIO_Driver", "sceSysreg_driver", 0xE2A5D1EE);
-    u64 (*SysregGetFuseId)() = sctrlHENFindFunction("sceLowIO_Driver", "sceSysreg_driver", 0x4F46EEDE);
-    u32 (*SysregGetFuseConfig)() = sctrlHENFindFunction("sceLowIO_Driver", "sceSysreg_driver", 0x8F4F4E96);
-    u32 (*SysconGetBaryonVersion)(u32*) = sctrlHENFindFunction("sceSYSCON_Driver", "sceSyscon_driver", 0x7EC5A957);
-    u32 (*SysconGetPommelVersion)(u32*) = sctrlHENFindFunction("sceSYSCON_Driver", "sceSyscon_driver", 0xE7E87741);
+    u32 (*SysregGetTachyonVersion)() = (void*)sctrlHENFindFunction("sceLowIO_Driver", "sceSysreg_driver", 0xE2A5D1EE);
+    u64 (*SysregGetFuseId)() = (void*)sctrlHENFindFunction("sceLowIO_Driver", "sceSysreg_driver", 0x4F46EEDE);
+    u32 (*SysregGetFuseConfig)() = (void*)sctrlHENFindFunction("sceLowIO_Driver", "sceSysreg_driver", 0x8F4F4E96);
+    u32 (*SysconGetBaryonVersion)(u32*) = (void*)sctrlHENFindFunction("sceSYSCON_Driver", "sceSyscon_driver", 0x7EC5A957);
+    u32 (*SysconGetPommelVersion)(u32*) = (void*)sctrlHENFindFunction("sceSYSCON_Driver", "sceSyscon_driver", 0xE7E87741);
 
     tachyon = SysregGetTachyonVersion();
     
@@ -222,7 +235,7 @@ int dcPatchModule(char *modname, int type, u32 addr, u32 word)
 {
     int k1 = pspSdkSetK1(0);
 
-    SceModule2 *mod = sceKernelFindModuleByName(modname);
+    SceModule *mod = sceKernelFindModuleByName(modname);
     if (!mod)
     {
         pspSdkSetK1(k1);
@@ -250,7 +263,7 @@ int dcPatchModuleString(char *modname, char *string, char *replace)
     int i;
     int count = 0;
 
-    SceModule2 *mod = sceKernelFindModuleByName(modname);
+    SceModule *mod = sceKernelFindModuleByName(modname);
     if (!mod)
     {
         pspSdkSetK1(k1);
@@ -744,11 +757,11 @@ void RedirectNandFunc(u32 nid, void *addr)
     REDIRECT_FUNCTION(orig, addr);
 }
 
-void OnModuleStart(SceModule2 *mod)
+int OnModuleStart(SceModule *mod)
 {
     if (strcmp(mod->modname, "sceLflashFatfmt") == 0)
     {
-        return; // avoid tmctrl patch
+        return 0; // avoid tmctrl patch
     }
     else if (strcmp(mod->modname, "sceLFatFs_Updater_Driver") == 0)
     {
@@ -778,8 +791,8 @@ void OnModuleStart(SceModule2 *mod)
         ClearCaches();
     }
     
-    if (previous)
-        previous(mod);
+    if (previous) return previous(mod);
+    return 0;
 }
 
 static PspSysEventHandler ev_handler =

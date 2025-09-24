@@ -985,7 +985,7 @@ int install_thread(SceSize args, void *argp)
     int res;
     int size;
     int model = kuKernelGetModel();
-    int mb;
+    u32 mb;
 
     dcGetHardwareInfo(NULL, NULL, NULL, &mb, NULL, NULL, NULL);
 
