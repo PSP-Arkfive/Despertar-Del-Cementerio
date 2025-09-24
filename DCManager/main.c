@@ -22,7 +22,7 @@
 
 #include "dcman.h"
 
-PSP_MODULE_INFO("DesCemManager", 0x1007, 1, 0);
+PSP_MODULE_INFO("DesCemManager", 0x1007, 10, 1);
 
 #define JAL_OPCODE    0x0C000000
 #define J_OPCODE    0x08000000

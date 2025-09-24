@@ -22,7 +22,7 @@
 #include "install.h"
 #include "nandoperations.h"
 
-PSP_MODULE_INFO("VUnbricker", 0x800, 2, 0);
+PSP_MODULE_INFO("VUnbricker", 0x800, 10, 1);
 PSP_MAIN_THREAD_ATTR(0);
 
 #define SMALL_BUFFER_SIZE    2000000
