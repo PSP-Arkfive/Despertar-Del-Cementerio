@@ -1,6 +1,7 @@
 .PHONY: all dependencies btcnf dc clean
 
-ARKSDK = $(CURDIR)/CFW/Libs/ark-dev-sdk
+PSPDEV = $(shell psp-config --pspdev-path)
+ARKSDK = $(PSPDEV)/share/ark-dev-sdk
 BOOTLOADEX = $(CURDIR)/CFW/Libs/BootLoadEx
 CIPLDIR = $(CURDIR)/CustomIPL
 MODDIR = $(CURDIR)/ExternalModules
@@ -9,13 +10,13 @@ MODDIR = $(CURDIR)/ExternalModules
 all: dependencies btcnf dc
 
 dependencies:
-	$(Q)$(MAKE) -C CFW full
-	$(Q)$(MAKE) ARKSDK="$(ARKSDK)" BOOTLOADEX="$(BOOTLOADEX)" -C CustomIPL
-	$(Q)$(MAKE) ARKSDK="$(ARKSDK)" BOOTLOADEX="$(BOOTLOADEX)" -C TimeMachine/TMCtrl660/rebootex
-	$(Q)$(MAKE) ARKSDK="$(ARKSDK)" BOOTLOADEX="$(BOOTLOADEX)" -C TimeMachine/TMCtrl660
-	$(Q)$(MAKE) ARKSDK="$(ARKSDK)" -C ExternalModules/IPL_Updater
-	$(Q)$(MAKE) ARKSDK="$(ARKSDK)" -C ExternalModules/IOPrivileged
-	$(Q)$(MAKE) ARKSDK="$(ARKSDK)" -C ExternalModules/idStorageRegen
+	$(Q)$(MAKE) -C CFW
+	$(Q)$(MAKE) BOOTLOADEX="$(BOOTLOADEX)" -C CustomIPL
+	$(Q)$(MAKE) BOOTLOADEX="$(BOOTLOADEX)" -C TimeMachine/TMCtrl660/rebootex
+	$(Q)$(MAKE) BOOTLOADEX="$(BOOTLOADEX)" -C TimeMachine/TMCtrl660
+	$(Q)$(MAKE) -C ExternalModules/IPL_Updater
+	$(Q)$(MAKE) -C ExternalModules/IOPrivileged
+	$(Q)$(MAKE) -C ExternalModules/idStorageRegen
 
 btcnf:
 	$(PYTHON) $(ARKSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_dc.txt
@@ -28,16 +29,16 @@ btcnf:
 	$(PYTHON) $(ARKSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_11g_dc.txt
 
 dc:
-	$(Q)$(MAKE) ARKSDK="$(ARKSDK)" -C DCManager
-	$(Q)$(MAKE) ARKSDK="$(ARKSDK)" CIPLDIR="$(CIPLDIR)" -C VUnbricker
-	$(Q)$(MAKE) ARKSDK="$(ARKSDK)" CIPLDIR="$(CIPLDIR)" MODDIR="$(MODDIR)" -C Installer
+	$(Q)$(MAKE) -C DCManager
+	$(Q)$(MAKE) CIPLDIR="$(CIPLDIR)" -C VUnbricker
+	$(Q)$(MAKE) CIPLDIR="$(CIPLDIR)" MODDIR="$(MODDIR)" -C Installer
 
 clean:
-	$(Q)$(MAKE) -C CFW fullclean
-	$(Q)$(MAKE) ARKSDK="$(ARKSDK)" BOOTLOADEX="$(BOOTLOADEX)" -C CustomIPL clean
-	$(Q)$(MAKE) ARKSDK="$(ARKSDK)" BOOTLOADEX="$(BOOTLOADEX)" -C TimeMachine/TMCtrl660/rebootex clean
-	$(Q)$(MAKE) ARKSDK="$(ARKSDK)" BOOTLOADEX="$(BOOTLOADEX)" -C TimeMachine/TMCtrl660 clean
-	$(Q)$(MAKE) ARKSDK="$(ARKSDK)" -C DCManager clean
-	$(Q)$(MAKE) ARKSDK="$(ARKSDK)" CIPLDIR="$(CIPLDIR)" -C VUnbricker clean
-	$(Q)$(MAKE) ARKSDK="$(ARKSDK)" -C Installer clean
+	$(Q)$(MAKE) -C CFW clean
+	$(Q)$(MAKE) BOOTLOADEX="$(BOOTLOADEX)" -C CustomIPL clean
+	$(Q)$(MAKE) BOOTLOADEX="$(BOOTLOADEX)" -C TimeMachine/TMCtrl660/rebootex clean
+	$(Q)$(MAKE) BOOTLOADEX="$(BOOTLOADEX)" -C TimeMachine/TMCtrl660 clean
+	$(Q)$(MAKE) -C DCManager clean
+	$(Q)$(MAKE) CIPLDIR="$(CIPLDIR)" -C VUnbricker clean
+	$(Q)$(MAKE) -C Installer clean
 	$(Q)rm -f btcnf/*.bin
