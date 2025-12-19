@@ -41,4 +41,7 @@ clean:
 	$(Q)$(MAKE) -C DCManager clean
 	$(Q)$(MAKE) CIPLDIR="$(CIPLDIR)" -C VUnbricker clean
 	$(Q)$(MAKE) -C Installer clean
+	$(Q)$(MAKE) -C ExternalModules/IPL_Updater clean
+	$(Q)$(MAKE) -C ExternalModules/IOPrivileged clean
+	$(Q)$(MAKE) -C ExternalModules/idStorageRegen clean
 	$(Q)rm -f btcnf/*.bin
