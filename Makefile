@@ -1,4 +1,4 @@
-.PHONY: all dependencies btcnf dc clean
+.PHONY: all btcnf dc clean
 
 PSPDEV = $(shell psp-config --pspdev-path)
 ARKSDK = $(PSPDEV)/share/ark-dev-sdk
@@ -7,16 +7,7 @@ CIPLDIR = $(CURDIR)/CustomIPL
 MODDIR = $(CURDIR)/ExternalModules
 
 
-all: dependencies btcnf dc
-
-dependencies:
-	$(Q)$(MAKE) -C CFW
-	$(Q)$(MAKE) BOOTLOADEX="$(BOOTLOADEX)" -C CustomIPL
-	$(Q)$(MAKE) BOOTLOADEX="$(BOOTLOADEX)" -C TimeMachine/TMCtrl660/rebootex
-	$(Q)$(MAKE) BOOTLOADEX="$(BOOTLOADEX)" -C TimeMachine/TMCtrl660
-	$(Q)$(MAKE) -C ExternalModules/IPL_Updater
-	$(Q)$(MAKE) -C ExternalModules/IOPrivileged
-	$(Q)$(MAKE) -C ExternalModules/idStorageRegen
+all: btcnf dc
 
 btcnf:
 	$(PYTHON) $(ARKSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_dc.txt
