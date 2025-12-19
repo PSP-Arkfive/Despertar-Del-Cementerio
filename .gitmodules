@@ -1,6 +1,3 @@
-[submodule "CustmoIPL"]
-	path = CustmoIPL
-	url = https://github.com/PSP-Arkfive/CustomIPL/
 [submodule "CustomIPL"]
 	path = CustomIPL
 	url = https://github.com/PSP-Arkfive/CustomIPL/
@@ -16,3 +13,6 @@
 [submodule "ExternalModules"]
 	path = ExternalModules
 	url = https://github.com/PSP-Arkfive/ExtraUtilityModules.git
+[submodule "CFW"]
+	path = CFW
+	url = https://github.com/PSP-Arkfive/ARK-5.git
