@@ -8,6 +8,10 @@ MODDIR = $(CURDIR)/ExternalModules
 
 
 all: btcnf dc
+	$(Q)mkdir -p dist/DC10
+	$(Q)cp DCManager/dcman.prx dist/DC10/
+	$(Q)cp VUnbricker/resurrection.prx dist/DC10/
+	$(Q)cp Installer/EBOOT.PBP dist/DC10/
 
 btcnf:
 	$(PYTHON) $(ARKSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_dc.txt
@@ -29,3 +33,4 @@ clean:
 	$(Q)$(MAKE) CIPLDIR="$(CIPLDIR)" -C VUnbricker clean
 	$(Q)$(MAKE) -C Installer clean
 	$(Q)rm -f btcnf/*.bin
+	$(Q)rm -rf dist

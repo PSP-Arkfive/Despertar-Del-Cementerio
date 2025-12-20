@@ -40,17 +40,8 @@ PSP_MODULE_INFO("DesCemManager", 0x1007, 10, 1);
 #define MAKE_DUMMY_FUNCTION1(a) _sw(0x03e00008, a); _sw(0x24020001, a+4);
 */
 
-
-// TODO: PR these into pspsdk
-extern int sceSysconReceiveSetParam(int n, u8 *buf); // pspsyscon.h
-extern int sceIdStorageCreateLeaf(unsigned int leafid); // pspidstorage.h
+#define sceIdStorageCreateAtomicLeaves sceIdStorage_driver_99ACCB71
 extern int sceIdStorage_driver_99ACCB71(u16 *leaves, int n); // sceIdStorageCreateAtomicLeaves? pspidstorage.h
-extern int sceIdStorageFormat(); // pspidstorage.h
-extern int sceIdStorageUnformat(); // pspidstorage.h
-extern int sceNandEraseBlock(u32 page); // pspnand_driver.h
-extern int sceNandWriteAccess(u32 page, u8 *user, u8 *spare, int, unsigned int); // pspnand_driver.h
-extern int sceNandReadExtraOnly(u32 page, u8 *block, int); // pspnand_driver.h
-extern int sceNandReadPagesRawAll(u32 page, u8 *block, void*, int); // pspnand_driver.h
 
 
 u32 tachyon, baryon, pommel, mb, fuseconfig, nandsize;
@@ -546,7 +537,7 @@ int dcIdStorageCreateAtomicLeaves(u16 *leaves, int n)
     int k1 = pspSdkSetK1(0);
     int level = sctrlKernelSetUserLevel(8);
 
-    int res = sceIdStorage_driver_99ACCB71(leaves, n); //sceIdStorageCreateAtomicLeaves(leaves, n);
+    int res = sceIdStorageCreateAtomicLeaves(leaves, n);
 
     sctrlKernelSetUserLevel(level);    
     pspSdkSetK1(k1);

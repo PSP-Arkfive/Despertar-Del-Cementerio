@@ -18,9 +18,6 @@
 #include <pspipl_update.h>
 #include <vlf.h>
 
-#include <ipl_block_large.h>
-#include <ipl_block_01g.h>
-
 #include <ark.h>
 #include "dcman.h"
 #include "main.h"
@@ -654,18 +651,9 @@ const char *f0_ark[] =
     "kd/ark_stargate.prx",
     "kd/ark_systemctrl.prx",
     "kd/ark_vshctrl.prx",
-};
-
-struct {
-    char* orig;
-    char* dest;
-} f0_ark_extras[] = {
-    {IDSREG_PRX, IDSREG_PRX_FLASH},
-    {XMBCTRL_PRX, XMBCTRL_PRX_FLASH},
-    {USBDEV_PRX, USBDEV_PRX_FLASH},
-    {VSH_MENU, VSH_MENU_FLASH},
-    {RECOVERY_PRX, RECOVERY_PRX_FLASH},
-    {UPDATER_FILE, UPDATER_FILE_FLASH},
+    "kd/ark_xmbctrl.prx",
+    "kd/ark_idsreg.prx",
+    "vsh/module/ark_usbdev.prx"
 };
 
 int LoadUpdaterModules()
@@ -1235,14 +1223,6 @@ int install_thread(SceSize args, void *argp)
     {
         int file_count = file_count += sizeof(f0_ark) / sizeof(f0_ark[0]);
         CopyFileList(fw, f0_ark, sizeof(f0_ark) / sizeof(f0_ark[0]), 0, file_count);
-        for (int i=0; i<(sizeof(f0_ark_extras)/sizeof(f0_ark_extras[0])); i++)
-        {
-        	char path[ARK_PATH_SIZE];
-        	strcpy(path, "flash0:/ARK_01234/");
-        	strcat(path, f0_ark_extras[i].orig);
-        	f0_ark_extras[i].dest[3] = 'c';
-        	copy_file(path, f0_ark_extras[i].dest);
-        }
     }
 
     SetProgress(100, 1);

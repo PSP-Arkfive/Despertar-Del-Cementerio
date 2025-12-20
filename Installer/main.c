@@ -1,3 +1,9 @@
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include <stdbool.h>
+#include <malloc.h>
 #include <pspsdk.h>
 #include <pspkernel.h>
 #include <pspdebug.h>
@@ -5,24 +11,12 @@
 #include <pspsuspend.h>
 #include <psppower.h>
 #include <pspreg.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <stdbool.h>
 
 #include <ark.h>
 #include <libpsardumper.h>
 #include <pspdecrypt.h>
 #include <kubridge.h>
 #include <vlf.h>
-
-#include <../CustomIPL/MSIPL/mainbinex/payload.h>
-#include <../TimeMachine/TMCtrl660/tmctrl.h>
-#include "tm_msipl.h"
-#include "tm_mloader.h"
-#include "new_msipl.h"
-#include "msipl_raw.h"
 
 #include "pspbtcnf_dc.h"
 #include "pspbtcnf_02g_dc.h"
@@ -32,34 +26,6 @@
 #include "pspbtcnf_07g_dc.h"
 #include "pspbtcnf_09g_dc.h"
 #include "pspbtcnf_11g_dc.h"
-
-#include "msipl_01G.h"
-#include "msipl_02G.h"
-#include "msipl_03G.h"
-#include "msipl_04G.h"
-#include "msipl_05G.h"
-#include "msipl_07G.h"
-#include "msipl_09G.h"
-#include "msipl_11G.h"
-
-#include <cipl_01G.h>
-#include <cipl_02G.h>
-#include <cipl_03G.h>
-#include <cipl_04G.h>
-#include <cipl_05G.h>
-#include <cipl_07G.h>
-#include <cipl_09G.h>
-#include <cipl_11G.h>
-
-#include "dcman.h"
-#include "ipl_update.h"
-#include "iop.h"
-#include "lflash_fdisk.h"
-#include "pspdecryptmod.h"
-#include "intrafont.h"
-#include "resurrection.h"
-#include "vlf.h"
-#include "idsregen.h"
 
 PSP_MODULE_INFO("VResurrection_Manager", 0x800, 2, 0);
 PSP_MAIN_THREAD_ATTR(0);
@@ -136,6 +102,59 @@ void ErrorExit(int milisecs, char *fmt, ...)
 int ReadFile(char *file, int seek, void *buf, int size);
 int WriteFile(char *file, void *buf, int size);
 void *malloc64(int size);
+
+int CopyFile(char* orig, char* dest){
+    #define BUF_SIZE (16*1024)
+    static u8 buf[BUF_SIZE];
+    int fdr = sceIoOpen(orig, PSP_O_RDONLY, 0777);
+    if (fdr < 0) return fdr;
+    int fdw = sceIoOpen(dest, PSP_O_WRONLY|PSP_O_CREAT|PSP_O_TRUNC, 0777);
+    if (fdw < 0){
+        sceIoClose(fdr);
+        return fdw;
+    }
+    while (1){
+        int read = sceIoRead(fdr, buf, BUF_SIZE);
+        if (read <= 0) break;
+        sceIoWrite(fdw, buf, read);
+    }
+    sceIoClose(fdr);
+    sceIoClose(fdw);
+    return 0;
+}
+
+void* ReadWholeFile(const char* path, size_t* size)
+{
+    SceUID fd = sceIoOpen(path, PSP_O_RDONLY, 0);
+    if (fd < 0)
+        return NULL;
+
+    *size = sceIoLseek(fd, 0, PSP_SEEK_END);
+    sceIoLseek(fd, 0, PSP_SEEK_SET);
+    
+    if (*size <= 0)
+    {
+       	sceIoClose(fd);
+      	return NULL;
+    }
+
+    void* data = memalign(64, *size);
+    if (data == NULL){
+        sceIoClose(fd);
+        return NULL;
+    }
+
+    int read = sceIoRead(fd, data, *size);
+    
+    sceIoClose(fd);
+    
+    if (read < *size){
+        free(data);
+        return NULL;
+    }
+
+    return data;
+}
 
 static int FindTablePath(char *table, int table_size, char *number, char *szOut) {
     int i, j, k;
@@ -261,11 +280,9 @@ int isVitaFile(char* filename){
     );
 }
 
-void extractFlash0Archive()
+void extractArchive(const char* archive, const char* dest_path)
 {
     int buf_size = 16 * 1024;
-    char *archive = DEFAULT_ARK_FOLDER "/" FLASH0_ARK;
-    char* dest_path = ARK_DC_PATH;
     unsigned char buf[buf_size];
     int path_len = strlen(dest_path)+1;
     static char filepath[ARK_PATH_SIZE];
@@ -320,77 +337,6 @@ void extractFlash0Archive()
     }
     else{
         ErrorExit(1000, "Unable to open " FLASH0_ARK "\n");
-    }
-}
-
-void CopyFile(char *src, char *dest)
-{
-    SceUID fdi = sceIoOpen(src, PSP_O_RDONLY, 0);
-    if (fdi < 0)
-    {
-        ErrorExit(1000, "Error opening %s: 0x%08X", src, fdi);
-    }
-    
-    SceUID fdo = sceIoOpen(dest, PSP_O_WRONLY | PSP_O_CREAT | PSP_O_TRUNC, 0777);
-    if (fdo < 0)
-    {
-        ErrorExit(1000, "Error opening %s: 0x%08X", dest, fdo);
-    }
-
-    int read = sceIoRead(fdi, g_dataOut, SMALL_BUFFER_SIZE);
-    if (read < 0)
-    {
-        ErrorExit(1000, "Error reading %s", src);
-    }
-    if (!read)
-        goto exit;
-
-    if (sceIoWrite(fdo, g_dataOut, read) < 0)
-    {
-        ErrorExit(1000, "Error writing %s", dest);
-    }
-
-exit:    
-    sceIoClose(fdi);
-    sceIoClose(fdo);
-}
-
-void WriteSavedataFiles()
-{
-    char src[260];
-    char dest[260];
-    int fd, ret;
-    SceIoDirent curFile;
-
-    strcpy(src, boot_path);
-    strcat(src, "/" DEFAULT_ARK_FOLDER);
-
-    sceIoMkdir(ARK_DC_PATH "/" DEFAULT_ARK_FOLDER, 0777);
-
-    fd = sceIoDopen(src);
-    if(fd >= 0)
-    {
-        do {
-        	memset(&curFile, 0, sizeof(SceIoDirent));
-
-        	ret = sceIoDread(fd, &curFile);
-
-        	if (ret > 0) {
-        		if (FIO_S_ISREG(curFile.d_stat.st_mode)) {	
-        			strcpy(src, boot_path);
-        			strcat(src, "/" DEFAULT_ARK_FOLDER "/");
-        			strcat(src, curFile.d_name);
-
-        			strcpy(dest, ARK_DC_PATH "/" DEFAULT_ARK_FOLDER "/");
-        			strcat(dest, curFile.d_name);
-
-        			CopyFile(src, dest);
-        		}
-        	}
-        } while (ret > 0);
-    }
-    else {
-        ErrorExit(1000, "Unable to copy ARK Savedata folder!.\n");
     }
 }
 
@@ -803,17 +749,17 @@ static void Extract661PSAR()
 
 static void WriteTimeMachineFiles()
 {
-    if (WriteFile(ARK_DC_PATH "/tmctrl.prx", tmctrl, size_tmctrl) != size_tmctrl)
-        ErrorExit(1000, "Error writing tmctrl.prx");
+    if (CopyFile("tmctrl.prx", ARK_DC_PATH "/tmctrl.prx") < 0){
+        ErrorExit(1000, "Error copying tmctrl.prx");
+    }
 
-    if (WriteFile(ARK_DC_PATH "/payload_01g.bin", ms_ipl_payload, size_ms_ipl_payload) != size_ms_ipl_payload)
-        ErrorExit(1000, "Error writing payload_01g.bin");
+    if (CopyFile(ARK_DC_PATH "/msipl.old", ARK_DC_PATH "/payload_01g.bin") < 0){
+        ErrorExit(1000, "Error copying payload_01g.bin");
+    }
 
-    if (WriteFile(ARK_DC_PATH "/payload_02g.bin", ms_ipl_payload, size_ms_ipl_payload) != size_ms_ipl_payload)
-        ErrorExit(1000, "Error writing payload_02g.bin");
-
-    if (WriteFile(ARK_DC_PATH "/tm_mloader.bin", tm_mloader, size_tm_mloader) != size_tm_mloader)
-        ErrorExit(1000, "Error writing payload_02g.bin");
+    if (CopyFile(ARK_DC_PATH "/msipl.old", ARK_DC_PATH "/payload_02g.bin") < 0){
+        ErrorExit(1000, "Error copying payload_02g.bin");
+    }
 }
 
 static void WriteDCFiles()
@@ -841,84 +787,34 @@ static void WriteDCFiles()
     
     if (WriteFile(ARK_DC_PATH "/kd/pspbtcnf_11g_dc.bin", pspbtcnf_11g_dc, size_pspbtcnf_11g_dc) != size_pspbtcnf_11g_dc)
         ErrorExit(1000, "Error writing pspbtcnf_11g_dc.bin");
-    
-    if (WriteFile(ARK_DC_PATH "/msipl.raw", msipl_raw, size_msipl_raw) != size_msipl_raw)
-        ErrorExit(1000, "Error writing msipl.raw");
 
-    if (WriteFile(ARK_DC_PATH "/msipl_01g.bin", msipl_01G, size_msipl_01G) != size_msipl_01G)
-        ErrorExit(1000, "Error writing msipl_01g.bin");
+    if (CopyFile("dcman.prx", ARK_DC_PATH "/kd/dcman.prx") < 0){
+        ErrorExit(1000, "Error copying dcman.prx");
+    }
 
-    if (WriteFile(ARK_DC_PATH "/msipl_02g.bin", msipl_02G, size_msipl_02G) != size_msipl_02G)
-        ErrorExit(1000, "Error writing msipl_02g.bin");
+    if (CopyFile("ipl_update.prx", ARK_DC_PATH "/kd/ipl_update.prx") < 0){
+        ErrorExit(1000, "Error copying ipl_update.prx");
+    }
 
-    if (WriteFile(ARK_DC_PATH "/msipl_03g.bin", msipl_03G, size_msipl_03G) != size_msipl_03G)
-        ErrorExit(1000, "Error writing msipl_03g.bin");
-    
-    if (WriteFile(ARK_DC_PATH "/msipl_04g.bin", msipl_04G, size_msipl_04G) != size_msipl_04G)
-        ErrorExit(1000, "Error writing msipl_04g.bin");
-    
-    if (WriteFile(ARK_DC_PATH "/msipl_05g.bin", msipl_05G, size_msipl_05G) != size_msipl_05G)
-        ErrorExit(1000, "Error writing msipl_05g.bin");
-    
-    if (WriteFile(ARK_DC_PATH "/msipl_07g.bin", msipl_07G, size_msipl_07G) != size_msipl_07G)
-        ErrorExit(1000, "Error writing msipl_07g.bin");
-    
-    if (WriteFile(ARK_DC_PATH "/msipl_09g.bin", msipl_09G, size_msipl_09G) != size_msipl_09G)
-        ErrorExit(1000, "Error writing msipl_09g.bin");
-    
-    if (WriteFile(ARK_DC_PATH "/msipl_11g.bin", msipl_11G, size_msipl_11G) != size_msipl_11G)
-        ErrorExit(1000, "Error writing msipl_11g.bin");
-    
-    if (WriteFile(ARK_DC_PATH "/cipl_01g.bin", cipl_01G, size_cipl_01G) != size_cipl_01G)
-        ErrorExit(1000, "Error writing cipl_01g.bin");
+    if (CopyFile("pspdecrypt.prx", ARK_DC_PATH "/kd/pspdecrypt.prx") < 0){
+        ErrorExit(1000, "Error copying pspdecrypt.prx");
+    }
 
-    if (WriteFile(ARK_DC_PATH "/cipl_02g.bin", cipl_02G, size_cipl_02G) != size_cipl_02G)
-        ErrorExit(1000, "Error writing cipl_02g.bin");
+    if (CopyFile("idsregeneration.prx", ARK_DC_PATH "/kd/idsregeneration.prx") < 0){
+        ErrorExit(1000, "Error copying idsregeneration.prx");
+    }
 
-    if (WriteFile(ARK_DC_PATH "/cipl_03g.bin", cipl_03G, size_cipl_03G) != size_cipl_03G)
-        ErrorExit(1000, "Error writing cipl_03g.bin");
-    
-    if (WriteFile(ARK_DC_PATH "/cipl_04g.bin", cipl_04G, size_cipl_04G) != size_cipl_04G)
-        ErrorExit(1000, "Error writing cipl_04g.bin");
-    
-    if (WriteFile(ARK_DC_PATH "/cipl_05g.bin", cipl_05G, size_cipl_05G) != size_cipl_05G)
-        ErrorExit(1000, "Error writing cipl_05g.bin");
-    
-    if (WriteFile(ARK_DC_PATH "/cipl_07g.bin", cipl_07G, size_cipl_07G) != size_cipl_07G)
-        ErrorExit(1000, "Error writing cipl_07g.bin");
-    
-    if (WriteFile(ARK_DC_PATH "/cipl_09g.bin", cipl_09G, size_cipl_09G) != size_cipl_09G)
-        ErrorExit(1000, "Error writing cipl_09g.bin");
-    
-    if (WriteFile(ARK_DC_PATH "/cipl_11g.bin", cipl_11G, size_cipl_11G) != size_cipl_11G)
-        ErrorExit(1000, "Error writing cipl_11g.bin");
+    if (CopyFile("intraFont.prx", ARK_DC_PATH "/vsh/module/intrafont.prx") < 0){
+        ErrorExit(1000, "Error copying intrafont.prx");
+    }
 
-    if (WriteFile(ARK_DC_PATH "/kd/dcman.prx", dcman, size_dcman) != size_dcman)
-        ErrorExit(1000, "Error writing dcman.prx");
+    if (CopyFile("vlf.prx", ARK_DC_PATH "/vsh/module/vlf.prx") < 0){
+        ErrorExit(1000, "Error copying vlf.prx");
+    }
 
-    if (WriteFile(ARK_DC_PATH "/kd/ipl_update.prx", ipl_update, size_ipl_update) != size_ipl_update)
-        ErrorExit(1000, "Error writing ipl_update.prx");
-
-    if (WriteFile(ARK_DC_PATH "/kd/iop.prx", iop, size_iop) != size_iop)
-        ErrorExit(1000, "Error writing iop.prx");
-
-    if (WriteFile(ARK_DC_PATH "/kd/lflash_fdisk.prx", lflash_fdisk, size_lflash_fdisk) != size_lflash_fdisk)
-        ErrorExit(1000, "Error writing lflash_fdisk.prx");
-
-    if (WriteFile(ARK_DC_PATH "/kd/pspdecrypt.prx", pspdecrypt, size_pspdecrypt) != size_pspdecrypt)
-        ErrorExit(1000, "Error writing pspdecrypt.prx");
-
-    if (WriteFile(ARK_DC_PATH "/vsh/module/intrafont.prx", intrafont, size_intrafont) != size_intrafont)
-        ErrorExit(1000, "Error writing intrafont.prx");
-
-    if (WriteFile(ARK_DC_PATH "/vsh/module/resurrection.prx", resurrection, size_resurrection) != size_resurrection)
-        ErrorExit(1000, "Error writing resurrection.prx");
-    
-    if (WriteFile(ARK_DC_PATH "/vsh/module/vlf.prx", vlf, size_vlf) != size_vlf)
-        ErrorExit(1000, "Error writing vlf.prx");
-
-    if (WriteFile(ARK_DC_PATH "/kd/idsregeneration.prx", idsregen, size_idsregen) != size_idsregen)
-        ErrorExit(1000, "Error writing idsregeneration.prx");
+    if (CopyFile("resurrection.prx", ARK_DC_PATH "/vsh/module/resurrection.prx") < 0){
+        ErrorExit(1000, "Error copying resurrection.prx");
+    }
 }
 
 int ReadSector(int sector, void *buf, int count)
@@ -1033,7 +929,10 @@ int install_iplloader()
     if (g_cancel)
         CancelInstall();
 
-    res = WriteSector(0x10, new_msipl /*tm_msipl*/, 32);
+    int msipl_size = 0;
+    void* msipl_buf = ReadWholeFile(ARK_DC_PATH "/msipl.bin", &msipl_size);
+    res = WriteSector(0x10, msipl_buf, 32);
+    free(msipl_buf);
     if (res != 32)
     {
         ErrorExit(1000, "Error 0x%08X in WriteSector.\n", res);
@@ -1160,7 +1059,8 @@ int install_thread(SceSize args, void *argp)
 
     SetStatus("Writing custom modules...");
 
-    extractFlash0Archive();
+    extractArchive(FLASH0_ARK, ARK_DC_PATH);
+    extractArchive("CIPL.ARK", ARK_DC_PATH);
 
     sceKernelDelayThread(250000);
     SetProgress(98, 1);
@@ -1172,10 +1072,6 @@ int install_thread(SceSize args, void *argp)
     SetStatus("Writing DC files...");
 
     WriteDCFiles();
-
-    SetStatus("Writing Savedata files...");
-
-    WriteSavedataFiles();
 
     SetStatus("Copying registry...");
 
@@ -1457,7 +1353,7 @@ int app_main()
 
     sceKernelExitGame();
 
-       return 0;
+    return 0;
 }
 
 
