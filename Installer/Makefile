@@ -14,22 +14,16 @@ OBJS = \
 	pspbtcnf_09g_dc.h \
 	pspbtcnf_11g_dc.h \
 	main.o \
-	libs/pspDecrypt.o \
-	libs/pspPSAR.o \
 
-
-INCDIR = ../include $(PSPSDK)/include \
-	$(CIPLDIR)/MSIPL/newipl/stage2 \
-	$(CIPLDIR)/MSIPL/newipl/stage3 \
-	$(CIPLDIR)/NewIPL/
 
 CFLAGS = -std=c99 -O2 -G0 -Wall -fshort-wchar -fno-pic -mno-check-zero-division 
 CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS = $(CFLAGS) -c
 
-LIBDIR = $(PSPSDK)/lib
+INCDIR =
+LIBDIR = 
 LDFLAGS = -nostartfiles
-LIBS = -lpspsystemctrl_user -lpspkubridge -lpsppower -lvlfgui -lvlfgu -lvlfutils -lpspsysc_user -lvlflibc
+LIBS = -lpspsystemctrl_user -lpspkubridge -lpsppower -lvlfgui -lvlfgu -lvlfutils -lvlflibc -lpspDecrypt -lpspPSAR
 
 PSP_FW_VERSION = 660
 

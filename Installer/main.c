@@ -336,7 +336,7 @@ void extractArchive(const char* archive, const char* dest_path)
         sceIoClose(fdr);
     }
     else{
-        ErrorExit(1000, "Unable to open " FLASH0_ARK "\n");
+        ErrorExit(1000, "Unable to open ARK archive\n");
     }
 }
 
