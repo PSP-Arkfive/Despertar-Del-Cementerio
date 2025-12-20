@@ -29,7 +29,7 @@ ASFLAGS = $(CFLAGS) -c
 
 LIBDIR = $(PSPSDK)/lib
 LDFLAGS = -nostartfiles
-LIBS = -lpspsystemctrl_user -lpspkubridge -lpsppower -lvlfgui -lvlfgu -lvlfutils -lvlflibc 
+LIBS = -lpspsystemctrl_user -lpspkubridge -lpsppower -lvlfgui -lvlfgu -lvlfutils -lpspsysc_user -lvlflibc
 
 PSP_FW_VERSION = 660
 

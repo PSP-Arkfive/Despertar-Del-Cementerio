@@ -1,9 +1,10 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdarg.h>
 #include <pspsdk.h>
 #include <pspkernel.h>
 #include <kubridge.h>
 
-#include <stdio.h>
-#include <string.h>
 #include <vlf.h>
 
 extern char boot_path[256];
@@ -44,9 +45,11 @@ int start_thread(SceSize args, void *argp)
     return sceKernelExitDeleteThread(0);
 }
 
-int module_start(SceSize args, void *argp)
+int _start(SceSize args, void *argp)
 {
+
     SceUID thid = sceKernelCreateThread("start_thread", start_thread, 0x10, 0x4000, 0, NULL);
+
     if (thid < 0)
         return thid;
 
@@ -54,4 +57,3 @@ int module_start(SceSize args, void *argp)
     
     return 0;
 }
-
