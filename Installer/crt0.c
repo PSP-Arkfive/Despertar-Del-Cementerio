@@ -34,9 +34,9 @@ int start_thread(SceSize args, void *argp)
 
     sceIoChdir(boot_path);
 
-    mod = kuKernelLoadModule("intraFont-vlf.prx", 0, NULL);
+    mod = kuKernelLoadModule("ms0:/PSP/LIBS/intraFont-vlf.prx", 0, NULL);
     mod = sceKernelStartModule(mod, args, argp, NULL, NULL);
-    mod = kuKernelLoadModule("vlf.prx", 0, NULL);
+    mod = kuKernelLoadModule("ms0:/PSP/LIBS/vlf.prx", 0, NULL);
     mod = sceKernelStartModule(mod, args, argp, NULL, NULL);
     vlfGuiInit(-1, app_main);
     

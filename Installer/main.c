@@ -13,6 +13,7 @@
 #include <pspreg.h>
 
 #include <ark.h>
+#include <cfwmacros.h>
 #include <libpsardumper.h>
 #include <pspdecrypt.h>
 #include <kubridge.h>
@@ -278,6 +279,27 @@ int isVitaFile(char* filename){
             || strstr(filename, "660")!=NULL // PSP 6.60 modules can be used on Vita, not needed for PSP
             || strstr(filename, "vita")!=NULL // Vita modules
     );
+}
+
+static const char* flash0_paths[] = {
+    FLASH0_ARK,
+    DEFAULT_ARK_PATH FLASH0_ARK
+};
+
+static const char* cipl_paths[] = {
+    CIPL_ARK,
+    "ms0:/PSP/GAME/CustomIPL/" CIPL_ARK
+};
+
+const char* findPath(const char** paths, int count){
+    for (int i=0; i<count; i++){
+        SceUID fd = sceIoOpen(paths[i], PSP_O_RDONLY, 0777);
+        if (fd >= 0){
+            sceIoClose(fd);
+            return paths[i];
+        }
+    }
+    return NULL;
 }
 
 void extractArchive(const char* archive, const char* dest_path)
@@ -788,28 +810,28 @@ static void WriteDCFiles()
     if (WriteFile(ARK_DC_PATH "/kd/pspbtcnf_11g_dc.bin", pspbtcnf_11g_dc, size_pspbtcnf_11g_dc) != size_pspbtcnf_11g_dc)
         ErrorExit(1000, "Error writing pspbtcnf_11g_dc.bin");
 
-    if (CopyFile("dcman.prx", ARK_DC_PATH "/kd/dcman.prx") < 0){
-        ErrorExit(1000, "Error copying dcman.prx");
-    }
-
-    if (CopyFile("ipl_update.prx", ARK_DC_PATH "/kd/ipl_update.prx") < 0){
+    if (CopyFile("ms0:/PSP/LIBS/ipl_update.prx", ARK_DC_PATH "/kd/ipl_update.prx") < 0){
         ErrorExit(1000, "Error copying ipl_update.prx");
     }
 
-    if (CopyFile("pspdecrypt.prx", ARK_DC_PATH "/kd/pspdecrypt.prx") < 0){
+    if (CopyFile("ms0:/PSP/LIBS/pspdecrypt.prx", ARK_DC_PATH "/kd/pspdecrypt.prx") < 0){
         ErrorExit(1000, "Error copying pspdecrypt.prx");
     }
 
-    if (CopyFile("idsregeneration.prx", ARK_DC_PATH "/kd/idsregeneration.prx") < 0){
+    if (CopyFile("ms0:/PSP/LIBS/idsregeneration.prx", ARK_DC_PATH "/kd/idsregeneration.prx") < 0){
         ErrorExit(1000, "Error copying idsregeneration.prx");
     }
 
-    if (CopyFile("intraFont.prx", ARK_DC_PATH "/vsh/module/intrafont.prx") < 0){
+    if (CopyFile("ms0:/PSP/LIBS/intraFont-vlf.prx", ARK_DC_PATH "/vsh/module/intrafont.prx") < 0){
         ErrorExit(1000, "Error copying intrafont.prx");
     }
 
-    if (CopyFile("vlf.prx", ARK_DC_PATH "/vsh/module/vlf.prx") < 0){
+    if (CopyFile("ms0:/PSP/LIBS/vlf.prx", ARK_DC_PATH "/vsh/module/vlf.prx") < 0){
         ErrorExit(1000, "Error copying vlf.prx");
+    }
+
+    if (CopyFile("dcman.prx", ARK_DC_PATH "/kd/dcman.prx") < 0){
+        ErrorExit(1000, "Error copying dcman.prx");
     }
 
     if (CopyFile("resurrection.prx", ARK_DC_PATH "/vsh/module/resurrection.prx") < 0){
@@ -1058,10 +1080,10 @@ int install_thread(SceSize args, void *argp)
     SetProgress(95, 1);
 
     SetStatus("Extracting " FLASH0_ARK);
-    extractArchive(FLASH0_ARK, ARK_DC_PATH);
+    extractArchive(findPath(flash0_paths, NELEMS(flash0_paths)), ARK_DC_PATH);
 
     SetStatus("Extracting " CIPL_ARK);
-    extractArchive(CIPL_ARK, ARK_DC_PATH);
+    extractArchive(findPath(cipl_paths, NELEMS(cipl_paths)), ARK_DC_PATH);
 
     sceKernelDelayThread(250000);
     SetProgress(98, 1);
@@ -1186,13 +1208,13 @@ int app_main()
         	             "If you are in a cfw, please reexecute psardumper on the higher kernel.\n");
     }
 
-    SceUID mod = LoadStartModule("libpsardumper.prx", PSP_MEMORY_PARTITION_KERNEL);
+    SceUID mod = LoadStartModule("ms0:/PSP/LIBS/libpsardumper.prx", PSP_MEMORY_PARTITION_KERNEL);
     if (mod < 0)
     {
         ErrorExit(1000, "Error 0x%08X loading/starting libpsardumper.prx.\n", mod);
     }
 
-    mod = LoadStartModule("pspdecrypt.prx", PSP_MEMORY_PARTITION_KERNEL);
+    mod = LoadStartModule("ms0:/PSP/LIBS/pspdecrypt.prx", PSP_MEMORY_PARTITION_KERNEL);
     if (mod < 0)
     {
         ErrorExit(1000, "Error 0x%08X loading/starting pspdecrypt.prx.\n", mod);
