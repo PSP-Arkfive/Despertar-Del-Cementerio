@@ -15,6 +15,7 @@ BootLoadExConfig bleconfig = {
     .boot_storage = MS_BOOT,
     .extra_io = {
         .psp_io = {
+            .tm_path = "/TM/DCARK",
             .FatMount = &MsFatMount,
             .FatOpen = &MsFatOpen,
             .FatRead = &MsFatRead,
