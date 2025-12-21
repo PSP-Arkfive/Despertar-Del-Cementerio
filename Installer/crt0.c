@@ -34,8 +34,6 @@ int start_thread(SceSize args, void *argp)
 
     sceIoChdir(boot_path);
 
-    mod = kuKernelLoadModule("iop.prx", 0, NULL);
-    mod = sceKernelStartModule(mod, args, argp, NULL, NULL);
     mod = kuKernelLoadModule("intraFont.prx", 0, NULL);
     mod = sceKernelStartModule(mod, args, argp, NULL, NULL);
     mod = kuKernelLoadModule("vlf.prx", 0, NULL);

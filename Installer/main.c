@@ -138,7 +138,7 @@ void* ReadWholeFile(const char* path, size_t* size)
       	return NULL;
     }
 
-    void* data = memalign(64, *size);
+    void* data = malloc64(*size);
     if (data == NULL){
         sceIoClose(fd);
         return NULL;
@@ -336,7 +336,7 @@ void extractArchive(const char* archive, const char* dest_path)
         sceIoClose(fdr);
     }
     else{
-        ErrorExit(1000, "Unable to open ARK archive\n");
+        ErrorExit(1000, "Unable to open archive %s\n", archive);
     }
 }
 
@@ -423,7 +423,7 @@ void ExtractPrxs(int cbFile, SceUID fd)
 
         						res = WriteFile(szDataPath, g_dataOut2, cbExpanded);
         						if (res != cbExpanded) {
-        							ErrorExit(1000, "Error writing %s.\n", szDataPath);
+        							ErrorExit(1000, "Error writing %s (%d bytes).\n", szDataPath, cbExpanded);
         						}
         					}
         					else if (strstr(name, "ipl") == name)
