@@ -12,7 +12,7 @@ OBJS = crt0.o main.o imports.o \
 	libs/pspIplUpdate.o \
 	libs/idsRegeneration.o \
 
-INCDIR = include ../include $(ARKSDK)/include $(CIPLDIR)/ClassicIPL
+INCDIR = include
 CFLAGS = -std=c99 -O2 -G0 -Wall -fshort-wchar -fno-pic -mno-check-zero-division
 CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS = $(CFLAGS) -c
