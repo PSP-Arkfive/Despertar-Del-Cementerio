@@ -1057,10 +1057,11 @@ int install_thread(SceSize args, void *argp)
     sceKernelDelayThread(250000);
     SetProgress(95, 1);
 
-    SetStatus("Writing custom modules...");
-
+    SetStatus("Extracting " FLASH0_ARK);
     extractArchive(FLASH0_ARK, ARK_DC_PATH);
-    extractArchive("CIPL.ARK", ARK_DC_PATH);
+
+    SetStatus("Extracting " CIPL_ARK);
+    extractArchive(CIPL_ARK, ARK_DC_PATH);
 
     sceKernelDelayThread(250000);
     SetProgress(98, 1);
@@ -1127,98 +1128,7 @@ int install_thread(SceSize args, void *argp)
     SetProgress(100, 1);
     sceKernelDelayThread(1200000);
 
-    strcpy(text, "");    
-
-    /*
-    if (key_install)
-    {
-        SceCtrlData pad;
-        char buf[256];		
-        int timeout = 10;
-        
-        while (1)
-        	{
-        		sprintf(text, "Please keep pressed for some seconds\n"
-        				 "the key/s which you want to use to\n"
-        				 "boot DC-ARK... \n\nYou have %d seconds or autoboot will be set.", timeout);
-        	
-        	
-
-        		sceKernelDelayThread(1000000);
-        		
-        		sceCtrlPeekBufferPositive(&pad, 1);
-        		
-        		if (pad.Buttons != 0)
-        			break;
-        		if(timeout==0) 
-        		{
-        			char *default_config = "NOTHING = \"ms0:/TM/DCARK/tm_mloader.bin\";\r\n";
-        			memcpy(g_dataOut, default_config, strlen(default_config));
-
-        			int size = ReadFile("ms0:/TM/config.txt", 0, g_dataOut+strlen(default_config), SMALL_BUFFER_SIZE);
-
-        			if (size >= 0)
-        			{
-        				WriteFile("ms0:/TM/config.txt", g_dataOut, size+strlen(default_config));
-        				break;
-        			}
-        			else 
-        			{
-        				WriteFile("ms0:/TM/config.txt", default_config, strlen(default_config));
-        				break;	
-        			}
-        		}
-        		timeout--;
-        		vlfGuiAddEventHandler(0, -1, OnPaintListenKeys, NULL);	
-        	}
-    
-        strcpy(buf, "");
-
-        int first = 1;
-
-        for (i = 0; i < 32; i++)
-        {
-        	if ((pad.Buttons & (1 << i)))
-        	{
-        		if (GetKeyName(1 << i))
-        		{
-        			if (!first)
-        				strcat(buf, "+");
-        			else
-        				first = 0;
-        			
-        			strcat(buf, GetKeyName(1 << i));
-        		}
-        	}
-        }
-
-
-        if(timeout!=0) {
-        	sprintf(text, "You chose %s to boot DC-ARK on boot.", buf);
-        	SetStatus(text);
-        	sceKernelDelayThread(850000);
-        	strcat(buf, " = \"ms0:/TM/DCARK/tm_mloader.bin\";\r\n");
-        	memcpy(g_dataOut, buf, strlen(buf));
-
-        	int size = ReadFile("ms0:/TM/config.txt", 0, g_dataOut+strlen(buf), SMALL_BUFFER_SIZE);
-
-        	if (size >= 0)
-        	{
-        		WriteFile("ms0:/TM/config.txt", g_dataOut, size+strlen(buf));
-        	}
-        	else
-        	{
-        		WriteFile("ms0:/TM/config.txt", g_dataOut, strlen(buf));
-        	}
-        	
-        	strcat(text, "\n");
-        	sceKernelDelayThread(350000);
-        }
-    }
-    */
-    
-    strcat(text, "\n");
-    strcat(text, "Installation completed.");
+    strcpy(text, "\nInstallation completed.");
     sceKernelDelayThread(100000);
     vlfGuiAddEventHandler(0, -1, OnInstallFinish, &key_install);
     sceKernelDelayThread(800000);
