@@ -810,23 +810,28 @@ static void WriteDCFiles()
     if (WriteFile(ARK_DC_PATH "/kd/pspbtcnf_11g_dc.bin", pspbtcnf_11g_dc, size_pspbtcnf_11g_dc) != size_pspbtcnf_11g_dc)
         ErrorExit(1000, "Error writing pspbtcnf_11g_dc.bin");
 
-    if (CopyFile("ms0:/PSP/LIBS/ipl_update.prx", ARK_DC_PATH "/kd/ipl_update.prx") < 0){
+    if (CopyFile("ipl_update.prx", ARK_DC_PATH "/kd/ipl_update.prx") < 0
+            && CopyFile("ms0:/PSP/LIBS/ipl_update.prx", ARK_DC_PATH "/kd/ipl_update.prx") < 0){
         ErrorExit(1000, "Error copying ipl_update.prx");
     }
 
-    if (CopyFile("ms0:/PSP/LIBS/pspdecrypt.prx", ARK_DC_PATH "/kd/pspdecrypt.prx") < 0){
+    if (CopyFile("pspdecrypt.prx", ARK_DC_PATH "/kd/pspdecrypt.prx") < 0
+            && CopyFile("ms0:/PSP/LIBS/pspdecrypt.prx", ARK_DC_PATH "/kd/pspdecrypt.prx") < 0){
         ErrorExit(1000, "Error copying pspdecrypt.prx");
     }
 
-    if (CopyFile("ms0:/PSP/LIBS/idsregeneration.prx", ARK_DC_PATH "/kd/idsregeneration.prx") < 0){
+    if (CopyFile("idsregeneration.prx", ARK_DC_PATH "/kd/idsregeneration.prx") < 0
+            && CopyFile("ms0:/PSP/LIBS/idsregeneration.prx", ARK_DC_PATH "/kd/idsregeneration.prx") < 0){
         ErrorExit(1000, "Error copying idsregeneration.prx");
     }
 
-    if (CopyFile("ms0:/PSP/LIBS/intraFont-vlf.prx", ARK_DC_PATH "/vsh/module/intrafont.prx") < 0){
+    if (CopyFile("intraFont-vlf.prx", ARK_DC_PATH "/vsh/module/intrafont.prx") < 0
+            && CopyFile("ms0:/PSP/LIBS/intraFont-vlf.prx", ARK_DC_PATH "/vsh/module/intrafont.prx") < 0){
         ErrorExit(1000, "Error copying intrafont.prx");
     }
 
-    if (CopyFile("ms0:/PSP/LIBS/vlf.prx", ARK_DC_PATH "/vsh/module/vlf.prx") < 0){
+    if (CopyFile("vlf.prx", ARK_DC_PATH "/vsh/module/vlf.prx") < 0
+            && CopyFile("ms0:/PSP/LIBS/vlf.prx", ARK_DC_PATH "/vsh/module/vlf.prx") < 0){
         ErrorExit(1000, "Error copying vlf.prx");
     }
 
@@ -1208,13 +1213,15 @@ int app_main()
         	             "If you are in a cfw, please reexecute psardumper on the higher kernel.\n");
     }
 
-    SceUID mod = LoadStartModule("ms0:/PSP/LIBS/libpsardumper.prx", PSP_MEMORY_PARTITION_KERNEL);
+    SceUID mod = LoadStartModule("libpsardumper.prx", PSP_MEMORY_PARTITION_KERNEL);
+    if (mod < 0) mod = LoadStartModule("ms0:/PSP/LIBS/libpsardumper.prx", PSP_MEMORY_PARTITION_KERNEL);
     if (mod < 0)
     {
         ErrorExit(1000, "Error 0x%08X loading/starting libpsardumper.prx.\n", mod);
     }
 
-    mod = LoadStartModule("ms0:/PSP/LIBS/pspdecrypt.prx", PSP_MEMORY_PARTITION_KERNEL);
+    mod = LoadStartModule("pspdecrypt.prx", PSP_MEMORY_PARTITION_KERNEL);
+    if (mod < 0) mod = LoadStartModule("ms0:/PSP/LIBS/pspdecrypt.prx", PSP_MEMORY_PARTITION_KERNEL);
     if (mod < 0)
     {
         ErrorExit(1000, "Error 0x%08X loading/starting pspdecrypt.prx.\n", mod);
