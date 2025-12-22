@@ -1155,7 +1155,10 @@ int install_thread(SceSize args, void *argp)
     SetProgress(100, 1);
     sceKernelDelayThread(1200000);
 
-    strcpy(text, "Installation completed.");
+    strcpy(text, "");
+    strcat(text, "\n");
+    strcat(text, "Installation completed.");
+
     sceKernelDelayThread(100000);
     vlfGuiAddEventHandler(0, -1, OnInstallFinish, &key_install);
     sceKernelDelayThread(800000);
@@ -1294,5 +1297,3 @@ int app_main()
 
     return 0;
 }
-
-
