@@ -13,8 +13,8 @@ extern char boot_path[256];
 extern int app_main(int argc, char *argv[]);
 
 static void SimpleErrorExit(int milisecs, char* errortext, int errorcode){
-    initScreen(&sceDisplaySetFramebuf);
-    PRTSTR2("ERROR: %s (%p)", errortext, errorcode);
+    initScreen(&sceDisplaySetFrameBuf);
+    PRTSTR2("ERROR: %s (%p)", (u32)errortext, (u32)errorcode);
     sceKernelDelayThread(milisecs*1000);
     sceKernelExitGame();
 }

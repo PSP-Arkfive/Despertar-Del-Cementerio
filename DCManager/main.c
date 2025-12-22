@@ -40,9 +40,6 @@ PSP_MODULE_INFO("DesCemManager", 0x1007, 10, 1);
 #define MAKE_DUMMY_FUNCTION1(a) _sw(0x03e00008, a); _sw(0x24020001, a+4);
 */
 
-#define sceIdStorageCreateAtomicLeaves sceIdStorage_driver_99ACCB71
-extern int sceIdStorage_driver_99ACCB71(u16 *leaves, int n); // sceIdStorageCreateAtomicLeaves? pspidstorage.h
-
 
 u32 tachyon, baryon, pommel, mb, fuseconfig, nandsize;
 u64 fuseid;
