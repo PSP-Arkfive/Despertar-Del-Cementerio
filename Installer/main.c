@@ -810,6 +810,12 @@ static void WriteDCFiles()
     if (WriteFile(ARK_DC_PATH "/kd/pspbtcnf_11g_dc.bin", pspbtcnf_11g_dc, size_pspbtcnf_11g_dc) != size_pspbtcnf_11g_dc)
         ErrorExit(1000, "Error writing pspbtcnf_11g_dc.bin");
 
+    
+    if (CopyFile("usbdevice.prx", ARK_DC_PATH "/kd/usbdevice.prx") < 0
+            && CopyFile("ms0:/PSP/LIBS/usbdevice.prx", ARK_DC_PATH "/kd/usbdevice.prx") < 0){
+        ErrorExit(1000, "Error copying usbdevice.prx");
+    }
+
     if (CopyFile("iop.prx", ARK_DC_PATH "/kd/iop.prx") < 0
             && CopyFile("ms0:/PSP/LIBS/iop.prx", ARK_DC_PATH "/kd/iop.prx") < 0){
         ErrorExit(1000, "Error copying iop.prx");

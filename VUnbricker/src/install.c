@@ -652,8 +652,8 @@ const char *f0_ark[] =
     "kd/ark_systemctrl.prx",
     "kd/ark_vshctrl.prx",
     "kd/ark_xmbctrl.prx",
-    "kd/ark_idsreg.prx",
-    "vsh/module/ark_usbdev.prx"
+    "kd/idsregeneration.prx",
+    "kd/usbdevice.prx"
 };
 
 int LoadUpdaterModules()
