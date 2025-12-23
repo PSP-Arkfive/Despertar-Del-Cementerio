@@ -810,6 +810,11 @@ static void WriteDCFiles()
     if (WriteFile(ARK_DC_PATH "/kd/pspbtcnf_11g_dc.bin", pspbtcnf_11g_dc, size_pspbtcnf_11g_dc) != size_pspbtcnf_11g_dc)
         ErrorExit(1000, "Error writing pspbtcnf_11g_dc.bin");
 
+    if (CopyFile("iop.prx", ARK_DC_PATH "/kd/iop.prx") < 0
+            && CopyFile("ms0:/PSP/LIBS/iop.prx", ARK_DC_PATH "/kd/iop.prx") < 0){
+        ErrorExit(1000, "Error copying iop.prx");
+    }
+
     if (CopyFile("ipl_update.prx", ARK_DC_PATH "/kd/ipl_update.prx") < 0
             && CopyFile("ms0:/PSP/LIBS/ipl_update.prx", ARK_DC_PATH "/kd/ipl_update.prx") < 0){
         ErrorExit(1000, "Error copying ipl_update.prx");
@@ -823,6 +828,11 @@ static void WriteDCFiles()
     if (CopyFile("idsregeneration.prx", ARK_DC_PATH "/kd/idsregeneration.prx") < 0
             && CopyFile("ms0:/PSP/LIBS/idsregeneration.prx", ARK_DC_PATH "/kd/idsregeneration.prx") < 0){
         ErrorExit(1000, "Error copying idsregeneration.prx");
+    }
+
+    if (CopyFile("lflash_fdisk.prx", ARK_DC_PATH "/kd/lflash_fdisk.prx") < 0
+            && CopyFile("ms0:/PSP/LIBS/lflash_fdisk.prx", ARK_DC_PATH "/kd/lflash_fdisk.prx") < 0){
+        ErrorExit(1000, "Error copying lflash_fdisk.prx");
     }
 
     if (CopyFile("intraFont-vlf.prx", ARK_DC_PATH "/vsh/module/intrafont.prx") < 0
