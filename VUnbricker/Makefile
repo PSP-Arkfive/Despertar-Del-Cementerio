@@ -2,15 +2,11 @@ PSPSDK=$(shell psp-config --pspsdk-path)
 
 
 TARGET = resurrection
-OBJS = crt0.o main.o imports.o \
+OBJS = crt0.o main.o \
 	src/install.o \
 	src/nandoperations.o \
 	src/flash_format.o \
 	src/idstools.o \
-	libs/DcManager.o \
-	libs/pspDecrypt.o \
-	libs/pspIplUpdate.o \
-	libs/idsRegeneration.o \
 
 INCDIR = include
 CFLAGS = -std=c99 -O2 -G0 -Wall -fshort-wchar -fno-pic -mno-check-zero-division
@@ -19,7 +15,10 @@ ASFLAGS = $(CFLAGS) -c
 
 LIBDIR = $(ARKSDK)/libs
 LDFLAGS = -nostartfiles
-LIBS = -lpsprtc -lvlfgui -lvlfgu -lvlfutils -lvlflibc -lpspreg -lpspsystemctrl_user -lpspkubridge -lpspwlan -lpsppower -lpspkernel
+LIBS = -lpsprtc -lpspreg -lpspwlan -lpsppower \
+	-lvlfgui -lvlfgu -lvlfutils -lvlflibc \
+	-lpspsystemctrl_user -lpspkubridge \
+	-lpspdcman -lpspdecrypt -lpspIplUpdate -lidsRegeneration
 
 PSP_FW_VERSION = 661
 PRX_EXPORTS = exports.exp
