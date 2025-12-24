@@ -22,9 +22,9 @@ BootLoadExConfig bleconfig = {
             .FatOpen = &MsFatOpen,
             .FatRead = &MsFatRead,
             .FatClose = &MsFatClose,
-            .UnpackBootConfig = &UnpackBootConfigArkPSP,
         }
-    }
+    },
+    .UnpackBootConfig = &UnpackBootConfigArkPSP,
 };
 
 // Entry Point
