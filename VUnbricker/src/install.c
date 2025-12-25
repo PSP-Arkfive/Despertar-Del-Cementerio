@@ -952,20 +952,6 @@ void CopyFileList(int fw, const char **list, int file_count, int start_file_coun
     }
 }
 
-void copy_file(char* orig, char* dest){
-    #define BUF_SIZE 16*1024
-    static u8 buf[BUF_SIZE];
-    int fdr = sceIoOpen(orig, PSP_O_RDONLY, 0777);
-    int fdw = sceIoOpen(dest, PSP_O_WRONLY|PSP_O_CREAT|PSP_O_TRUNC, 0777);
-    while (1){
-        int read = sceIoRead(fdr, buf, BUF_SIZE);
-        if (read <= 0) break;
-        sceIoWrite(fdw, buf, read);
-    }
-    sceIoClose(fdr);
-    sceIoClose(fdw);
-}
-
 int install_thread(SceSize args, void *argp)
 {
     int fw = *(int *)argp;    
