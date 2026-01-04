@@ -273,11 +273,11 @@ int is5Dnum(char *str) {
     return 1;
 }
 
-// TODO don't duplicate this
 int isVitaFile(char* filename){
-    return (strstr(filename, "psv")!=NULL // PS Vita btcnf replacement, not used on PSP
-            || strstr(filename, "660")!=NULL // PSP 6.60 modules can be used on Vita, not needed for PSP
-            || strstr(filename, "vita")!=NULL // Vita modules
+    return (   strstr(filename, "psv")  !=NULL // PS Vita btcnf replacement, not used on PSP
+            || strstr(filename, "psx")  !=NULL // PS Vita POPS btcnf replacement, not used on PSP
+            || strstr(filename, "660")  !=NULL // PSP 6.60 modules can be used on Vita, not needed for PSP
+            || strstr(filename, "vita") !=NULL // Vita modules
     );
 }
 

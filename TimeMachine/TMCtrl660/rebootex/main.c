@@ -31,6 +31,8 @@ BootLoadExConfig bleconfig = {
 int cfwBoot(int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7)
 {
     #ifdef DEBUG
+    // set LCD framebuffer in hardware reg so we can do color debbuging
+    _sw(0x44000000, 0xBC800100);
     colorDebug(0xff00);
     #endif
 
