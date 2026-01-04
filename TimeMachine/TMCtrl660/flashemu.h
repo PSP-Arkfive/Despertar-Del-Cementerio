@@ -1,9 +1,6 @@
 #ifndef __FLASHEMU_H__
 #define __FLASHEMU_H__
 
-int InstallFlashEmu();
-int UninstallFlashEmu();
-
 #define MAX_FILES 32
 #define DIR_FLAG 0xd0d0
 
@@ -17,5 +14,8 @@ typedef struct
     int flags;
     SceOff offset;
 } FileHandler;
+
+int InstallFlashEmu();
+int UninstallFlashEmu();
 
 #endif
