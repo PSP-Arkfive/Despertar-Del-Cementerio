@@ -23,7 +23,7 @@ ASFLAGS = $(CFLAGS) -c
 INCDIR =
 LIBDIR = 
 LDFLAGS = -nostartfiles
-LIBS = -lscreenprinter -lcolordebugger -lpspsystemctrl_user -lpspkubridge -lpsppower -lvlfgui -lvlfgu -lvlfutils -lvlflibc -lpspdecrypt -lpspPSAR
+LIBS = -lscreenprinter -lcolordebugger -lpspsystemctrl_user -lpspkubridge -lpsppower -lvlfgui -lvlfgu -lvlfutils -lvlflibc -lpspdecrypt -lpsppsar
 
 PSP_FW_VERSION = 660
 
