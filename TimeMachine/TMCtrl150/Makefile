@@ -1,5 +1,5 @@
 PSPSDK=$(shell psp-config --pspsdk-path)
-ARKSDK = ../../ark-dev-sdk
+CFWSDK = ../../psp-cfw-sdk
 
 TARGET = tmctrl150
 
@@ -12,7 +12,7 @@ all: $(TARGET).prx tmctrl.h
 tmctrl.h: $(TARGET).prx
 	$(Q)bin2c $(TARGET).prx tmctrl.h tmctrl
 
-INCDIR = $(ARKSDK)/include
+INCDIR = $(CFWSDK)/include
 CFLAGS = -std=c99 -Os -G0 -Wall -fno-pic -fshort-wchar
 CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS = $(CFLAGS)
@@ -23,7 +23,7 @@ PRX_EXPORTS = exports.exp
 USE_KERNEL_LIBC=1
 USE_KERNEL_LIBS=1
 
-LIBDIR = $(ARKSDK)/libs
+LIBDIR = $(CFWSDK)/libs
 LDFLAGS = -nostartfiles
 LIBS = -lpspsystemctrl_kernel
 

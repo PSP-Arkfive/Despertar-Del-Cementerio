@@ -13,12 +13,12 @@ CFLAGS = -std=c99 -O2 -G0 -Wall -fshort-wchar -fno-pic -mno-check-zero-division
 CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS = $(CFLAGS) -c
 
-LIBDIR = $(ARKSDK)/libs
+LIBDIR = $(CFWSDK)/libs
 LDFLAGS = -nostartfiles
 LIBS = -lpsprtc -lpspreg -lpspwlan -lpsppower \
 	-lvlfgui -lvlfgu -lvlfutils -lvlflibc \
 	-lpspsystemctrl_user -lpspkubridge \
-	-lpspdcman -lpspdecrypt -lpspIplUpdate -lidsRegeneration
+	-lpspdcman -lpspdecrypt -lpspiplupdate -lidsregeneration
 
 PSP_FW_VERSION = 661
 PRX_EXPORTS = exports.exp

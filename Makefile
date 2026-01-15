@@ -1,7 +1,7 @@
 .PHONY: all btcnf dc clean
 
 PSPDEV = $(shell psp-config --pspdev-path)
-ARKSDK = $(PSPDEV)/share/ark-dev-sdk
+CFWSDK = $(PSPDEV)/share/psp-cfw-sdk
 
 
 all: btcnf dc
@@ -13,14 +13,14 @@ all: btcnf dc
 	$(Q)cp TimeMachine/TMCtrl150/*.prx dist/DC10/
 
 btcnf:
-	$(PYTHON) $(ARKSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_dc.txt
-	$(PYTHON) $(ARKSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_02g_dc.txt
-	$(PYTHON) $(ARKSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_03g_dc.txt
-	$(PYTHON) $(ARKSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_04g_dc.txt
-	$(PYTHON) $(ARKSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_05g_dc.txt
-	$(PYTHON) $(ARKSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_07g_dc.txt
-	$(PYTHON) $(ARKSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_09g_dc.txt
-	$(PYTHON) $(ARKSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_11g_dc.txt
+	$(PYTHON) $(CFWSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_dc.txt
+	$(PYTHON) $(CFWSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_02g_dc.txt
+	$(PYTHON) $(CFWSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_03g_dc.txt
+	$(PYTHON) $(CFWSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_04g_dc.txt
+	$(PYTHON) $(CFWSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_05g_dc.txt
+	$(PYTHON) $(CFWSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_07g_dc.txt
+	$(PYTHON) $(CFWSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_09g_dc.txt
+	$(PYTHON) $(CFWSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_11g_dc.txt
 
 dc:
 	$(Q)$(MAKE) -C Installer

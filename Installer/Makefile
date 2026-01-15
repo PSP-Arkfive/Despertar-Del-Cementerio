@@ -1,6 +1,6 @@
 PSPSDK=$(shell psp-config --pspsdk-path)
 PSPDEV = $(shell psp-config --pspdev-path)
-ARKSDK = $(PSPDEV)/share/ark-dev-sdk
+CFWSDK = $(PSPDEV)/share/psp-cfw-sdk
 
 TARGET = arkdcinstaller
 OBJS = \
