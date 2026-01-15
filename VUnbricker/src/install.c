@@ -18,7 +18,7 @@
 #include <pspipl_update.h>
 #include <vlf.h>
 
-#include <ark.h>
+#include <systemctrl_ark.h>
 #include "dcman.h"
 #include "main.h"
 #include "install.h"

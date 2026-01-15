@@ -5,7 +5,7 @@
 #include <pspthreadman_kernel.h>
 
 #include "flashemu.h"
-#include "ark.h"
+#include "systemctrl_ark.h"
 
 char path[260];
 

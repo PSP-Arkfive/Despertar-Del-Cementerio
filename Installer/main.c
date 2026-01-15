@@ -12,7 +12,7 @@
 #include <psppower.h>
 #include <pspreg.h>
 
-#include <ark.h>
+#include <systemctrl_ark.h>
 #include <cfwmacros.h>
 #include <libpsardumper.h>
 #include <pspdecrypt.h>
