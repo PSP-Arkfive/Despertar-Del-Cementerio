@@ -14,15 +14,13 @@
 BootLoadExConfig bleconfig = {
     .boot_type = TYPE_REBOOTEX,
     .boot_storage = MS_BOOT,
-    .extra_io = {
-        .psp_io = {
-            .use_fatms371 = 0,
-            .tm_path = "/TM/DCARK",
-            .FatMount = &MsFatMount,
-            .FatOpen = &MsFatOpen,
-            .FatRead = &MsFatRead,
-            .FatClose = &MsFatClose,
-        }
+    .extra_io.psp_io = {
+        .use_fatms371 = 0,
+        .tm_path = "/TM/DCARK",
+        .FatMount = &MsFatMount,
+        .FatOpen = &MsFatOpen,
+        .FatRead = &MsFatRead,
+        .FatClose = &MsFatClose,
     },
     .UnpackBootConfig = &UnpackBootConfigArkPSP,
 };
