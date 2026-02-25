@@ -1,4 +1,5 @@
 PSPSDK=$(shell psp-config --pspsdk-path)
+CFWSDK = $(PSPDEV)/share/psp-cfw-sdk
 
 TARGET = tmctrl
 
@@ -6,10 +7,16 @@ OBJS = \
 	main.o \
 	flashemu.o \
 	
-all: $(TARGET).prx tmctrl.h
+all: cptbl.h $(TARGET).prx tmctrl.h
 
 tmctrl.h: $(TARGET).prx
 	$(Q)bin2c $(TARGET).prx tmctrl.h tmctrl
+
+cptbl.h:
+	$(Q)dd if=../../Resources/cptbl.dat of=cptbl.dat bs=2048 conv=sync
+	$(Q)$(CFWSDK)/build-tools/ciso/ciso.py -c 1 cptbl.dat cptbl.cso
+	$(Q)bin2c cptbl.cso cptbl.h cptbl
+	$(Q)rm cptbl.dat cptbl.cso
 
 INCDIR = rebootex
 CFLAGS = -std=c99 -Os -G0 -Wall -fno-pic -fshort-wchar
@@ -25,7 +32,7 @@ USE_KERNEL_LIBS=1
 
 LIBDIR = 
 LDFLAGS = -nostartfiles
-LIBS = -lpspsystemctrl_kernel -lpspsemaphore_660
+LIBS = -lcisoread -lpspsystemctrl_kernel -lpspsemaphore_660
 
 PSP_FW_VERSION = 660
 
