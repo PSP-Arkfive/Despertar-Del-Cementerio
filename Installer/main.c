@@ -19,14 +19,14 @@
 #include <kubridge.h>
 #include <vlf.h>
 
-#include "pspbtcnf_dc.h"
-#include "pspbtcnf_02g_dc.h"
-#include "pspbtcnf_03g_dc.h"
-#include "pspbtcnf_04g_dc.h"
-#include "pspbtcnf_05g_dc.h"
-#include "pspbtcnf_07g_dc.h"
-#include "pspbtcnf_09g_dc.h"
-#include "pspbtcnf_11g_dc.h"
+#include <pspbtcnf_dc.h>
+#include <pspbtcnf_02g_dc.h>
+#include <pspbtcnf_03g_dc.h>
+#include <pspbtcnf_04g_dc.h>
+#include <pspbtcnf_05g_dc.h>
+#include <pspbtcnf_07g_dc.h>
+#include <pspbtcnf_09g_dc.h>
+#include <pspbtcnf_11g_dc.h>
 
 PSP_MODULE_INFO("VResurrection_Manager", 0x800, 2, 0);
 PSP_MAIN_THREAD_ATTR(0);

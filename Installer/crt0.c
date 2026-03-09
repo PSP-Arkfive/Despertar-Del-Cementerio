@@ -66,7 +66,7 @@ int start_thread(SceSize args, void *argp)
     return sceKernelExitDeleteThread(0);
 }
 
-int _start(SceSize args, void *argp)
+int module_start(SceSize args, void *argp)
 {
 
     SceUID thid = sceKernelCreateThread("start_thread", start_thread, 0x10, 0x4000, 0, NULL);

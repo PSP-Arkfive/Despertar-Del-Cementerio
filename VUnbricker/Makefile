@@ -14,11 +14,11 @@ CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS = $(CFLAGS) -c
 
 LIBDIR = $(CFWSDK)/libs
-LDFLAGS = -nostartfiles
-LIBS = -lpsprtc -lpspreg -lpspwlan -lpsppower \
+LDFLAGS = -nostdlib
+LIBS = -lpspuser -lpsprtc -lpspreg -lpspwlan -lpsppower \
 	-lvlfgui -lvlfgu -lvlfutils -lvlflibc \
 	-lpspsystemctrl_user -lpspkubridge \
-	-lpspdcman -lpspdecrypt -lpspiplupdate -lidsregeneration
+	-lpspdcman -lpspdecrypt -lpspiplupdate -lidsregeneration -lpspmodinfo
 
 PSP_FW_VERSION = 661
 PRX_EXPORTS = exports.exp

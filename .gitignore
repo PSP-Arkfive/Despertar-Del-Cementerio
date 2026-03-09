@@ -1,0 +1,11 @@
+build/**
+dist/**
+*.o
+*.bin
+*.bin.gz
+*.elf
+*.prx
+EBOOT.PBP
+PARAM.SFO
+btcnf/*.bin
+Installer/pspbtcnf*.h
