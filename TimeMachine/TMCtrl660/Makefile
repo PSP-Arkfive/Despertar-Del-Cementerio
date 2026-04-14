@@ -1,5 +1,6 @@
 PSPSDK=$(shell psp-config --pspsdk-path)
 CFWSDK = $(PSPDEV)/share/psp-cfw-sdk
+PY = $(shell which python3)
 
 TARGET = tmctrl
 
@@ -14,7 +15,7 @@ tmctrl.h: $(TARGET).prx
 
 cptbl.h:
 	$(Q)dd if=../../Resources/cptbl.dat of=cptbl.dat bs=2048 conv=sync
-	$(Q)$(CFWSDK)/build-tools/ciso/ciso.py -c 1 cptbl.dat cptbl.cso
+	$(Q)$(PY) $(CFWSDK)/build-tools/ciso/ciso.py -c 1 cptbl.dat cptbl.cso
 	$(Q)bin2c cptbl.cso cptbl.h cptbl
 	$(Q)rm cptbl.dat cptbl.cso
 
@@ -40,4 +41,4 @@ PSPSDK=$(shell psp-config --pspsdk-path)
 include $(PSPSDK)/lib/build.mak
 
 clean:
-	$(Q)rm -rf *.o *.elf *.prx exports.o exports.c tmctrl.h
+	$(Q)rm -rf *.o *.elf *.prx exports.o exports.c tmctrl.h cptbl.h
