@@ -11,7 +11,7 @@ Legendary unbricking tool for the Sony PSP.
 
 ## Features
 
-- Allows doing a `6.61 ARK` or `6.61 OFW` fresh installations.
+- Allows doing a `6.61 ARK` or `6.61 OFW` fresh installation.
 - Can boot `6.61 ARK` from Memory Stick without doing any permanent changes.
 - Backup and restore nand.
 - Change UMD drive region.
