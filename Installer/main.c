@@ -299,6 +299,7 @@ const char* findPath(const char** paths, int count){
             return paths[i];
         }
     }
+    ErrorExit(1000, "Unable to open archive %s\n", paths[0]);
     return NULL;
 }
 
