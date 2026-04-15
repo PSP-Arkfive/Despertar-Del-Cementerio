@@ -10,6 +10,8 @@ all: btcnf dc
 	$(Q)cp VUnbricker/resurrection.prx dist/DC10/
 	$(Q)cp Installer/EBOOT.PBP dist/DC10/
 	$(Q)cp TimeMachine/*.prx dist/DC10/
+	$(Q)cp Resources/ARK/* dist/DC10/
+	$(Q)cp Resources/LIBS/* dist/DC10/
 
 btcnf:
 	$(PYTHON) $(CFWSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_dc.txt
