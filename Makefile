@@ -1,27 +1,26 @@
 .PHONY: all btcnf dc clean
 
+PYTHON = $(shell which python3)
 PSPDEV = $(shell psp-config --pspdev-path)
-CFWSDK = $(PSPDEV)/share/psp-cfw-sdk
+BUILDTOOLS = $(PSPDEV)/share/psp-cfw-sdk/build-tools
 
 
 all: btcnf dc
 	$(Q)mkdir -p dist/DC10
-	$(Q)cp DCManager/dcman.prx dist/DC10/
-	$(Q)cp VUnbricker/resurrection.prx dist/DC10/
+	$(PYTHON) $(BUILDTOOLS)/pack/pack.py -p dist/DC10/DC10.ARK packlist.txt -s
 	$(Q)cp Installer/EBOOT.PBP dist/DC10/
-	$(Q)cp TimeMachine/*.prx dist/DC10/
 	$(Q)cp Resources/ARK/* dist/DC10/
 	$(Q)cp Resources/LIBS/* dist/DC10/
 
 btcnf:
-	$(PYTHON) $(CFWSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_dc.txt
-	$(PYTHON) $(CFWSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_02g_dc.txt
-	$(PYTHON) $(CFWSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_03g_dc.txt
-	$(PYTHON) $(CFWSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_04g_dc.txt
-	$(PYTHON) $(CFWSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_05g_dc.txt
-	$(PYTHON) $(CFWSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_07g_dc.txt
-	$(PYTHON) $(CFWSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_09g_dc.txt
-	$(PYTHON) $(CFWSDK)/build-tools/btcnf.py build btcnf/pspbtcnf_11g_dc.txt
+	$(PYTHON) $(BUILDTOOLS)/btcnf.py build btcnf/pspbtcnf_dc.txt
+	$(PYTHON) $(BUILDTOOLS)/btcnf.py build btcnf/pspbtcnf_02g_dc.txt
+	$(PYTHON) $(BUILDTOOLS)/btcnf.py build btcnf/pspbtcnf_03g_dc.txt
+	$(PYTHON) $(BUILDTOOLS)/btcnf.py build btcnf/pspbtcnf_04g_dc.txt
+	$(PYTHON) $(BUILDTOOLS)/btcnf.py build btcnf/pspbtcnf_05g_dc.txt
+	$(PYTHON) $(BUILDTOOLS)/btcnf.py build btcnf/pspbtcnf_07g_dc.txt
+	$(PYTHON) $(BUILDTOOLS)/btcnf.py build btcnf/pspbtcnf_09g_dc.txt
+	$(PYTHON) $(BUILDTOOLS)/btcnf.py build btcnf/pspbtcnf_11g_dc.txt
 
 dc:
 	$(Q)$(MAKE) -C Installer

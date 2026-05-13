@@ -5,14 +5,6 @@ CFWSDK = $(PSPDEV)/share/psp-cfw-sdk
 TARGET = arkdcinstaller
 OBJS = \
 	crt0.o \
-	pspbtcnf_dc.h \
-	pspbtcnf_02g_dc.h \
-	pspbtcnf_03g_dc.h \
-	pspbtcnf_04g_dc.h \
-	pspbtcnf_05g_dc.h \
-	pspbtcnf_07g_dc.h \
-	pspbtcnf_09g_dc.h \
-	pspbtcnf_11g_dc.h \
 	main.o \
 
 
@@ -34,32 +26,5 @@ PSP_EBOOT_PIC0 = res/despertar.png
 BUILD_PRX = 1
 
 all: $(TARGET).prx
-
-pspbtcnf_dc.h:
-	$(Q)bin2c ../btcnf/pspbtcnf_dc.bin pspbtcnf_dc.h pspbtcnf_dc
-
-pspbtcnf_02g_dc.h:
-	$(Q)bin2c ../btcnf/pspbtcnf_02g_dc.bin pspbtcnf_02g_dc.h pspbtcnf_02g_dc
-
-pspbtcnf_03g_dc.h:
-	$(Q)bin2c ../btcnf/pspbtcnf_03g_dc.bin pspbtcnf_03g_dc.h pspbtcnf_03g_dc
-
-pspbtcnf_04g_dc.h:
-	$(Q)bin2c ../btcnf/pspbtcnf_04g_dc.bin pspbtcnf_04g_dc.h pspbtcnf_04g_dc
-
-pspbtcnf_05g_dc.h:
-	$(Q)bin2c ../btcnf/pspbtcnf_05g_dc.bin pspbtcnf_05g_dc.h pspbtcnf_05g_dc
-
-pspbtcnf_07g_dc.h:
-	$(Q)bin2c ../btcnf/pspbtcnf_07g_dc.bin pspbtcnf_07g_dc.h pspbtcnf_07g_dc
-
-pspbtcnf_09g_dc.h:
-	$(Q)bin2c ../btcnf/pspbtcnf_09g_dc.bin pspbtcnf_09g_dc.h pspbtcnf_09g_dc
-
-pspbtcnf_11g_dc.h:
-	$(Q)bin2c ../btcnf/pspbtcnf_11g_dc.bin pspbtcnf_11g_dc.h pspbtcnf_11g_dc
-
-distclean:
-	make clean
 
 include $(PSPSDK)/lib/build.mak

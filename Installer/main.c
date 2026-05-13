@@ -19,14 +19,6 @@
 #include <kubridge.h>
 #include <vlf.h>
 
-#include <pspbtcnf_dc.h>
-#include <pspbtcnf_02g_dc.h>
-#include <pspbtcnf_03g_dc.h>
-#include <pspbtcnf_04g_dc.h>
-#include <pspbtcnf_05g_dc.h>
-#include <pspbtcnf_07g_dc.h>
-#include <pspbtcnf_09g_dc.h>
-#include <pspbtcnf_11g_dc.h>
 
 PSP_MODULE_INFO("VResurrection_Manager", 0x800, 2, 0);
 PSP_MAIN_THREAD_ATTR(0);
@@ -772,10 +764,6 @@ static void Extract661PSAR()
 
 static void WriteTimeMachineFiles()
 {
-    if (CopyFile("tmctrl.prx", ARK_DC_PATH "/tmctrl.prx") < 0){
-        ErrorExit(1000, "Error copying tmctrl.prx");
-    }
-
     if (CopyFile(ARK_DC_PATH "/msipl.old", ARK_DC_PATH "/payload_01g.bin") < 0){
         ErrorExit(1000, "Error copying payload_01g.bin");
     }
@@ -787,30 +775,6 @@ static void WriteTimeMachineFiles()
 
 static void WriteDCFiles()
 {
-    if (WriteFile(ARK_DC_PATH "/kd/pspbtcnf_dc.bin", pspbtcnf_dc, size_pspbtcnf_dc) != size_pspbtcnf_dc)
-        ErrorExit(1000, "Error writing pspbtcnf_01g_dc.bin");
-
-    if (WriteFile(ARK_DC_PATH "/kd/pspbtcnf_02g_dc.bin", pspbtcnf_02g_dc, size_pspbtcnf_02g_dc) != size_pspbtcnf_02g_dc)
-        ErrorExit(1000, "Error writing pspbtcnf_02g_dc.bin");
-    
-    if (WriteFile(ARK_DC_PATH "/kd/pspbtcnf_03g_dc.bin", pspbtcnf_03g_dc, size_pspbtcnf_03g_dc) != size_pspbtcnf_03g_dc)
-        ErrorExit(1000, "Error writing pspbtcnf_03g_dc.bin");
-    
-    if (WriteFile(ARK_DC_PATH "/kd/pspbtcnf_04g_dc.bin", pspbtcnf_04g_dc, size_pspbtcnf_04g_dc) != size_pspbtcnf_04g_dc)
-        ErrorExit(1000, "Error writing pspbtcnf_04g_dc.bin");
-    
-    if (WriteFile(ARK_DC_PATH "/kd/pspbtcnf_05g_dc.bin", pspbtcnf_05g_dc, size_pspbtcnf_05g_dc) != size_pspbtcnf_05g_dc)
-        ErrorExit(1000, "Error writing pspbtcnf_05g_dc.bin");
-    
-    if (WriteFile(ARK_DC_PATH "/kd/pspbtcnf_07g_dc.bin", pspbtcnf_07g_dc, size_pspbtcnf_07g_dc) != size_pspbtcnf_07g_dc)
-        ErrorExit(1000, "Error writing pspbtcnf_07g_dc.bin");
-    
-    if (WriteFile(ARK_DC_PATH "/kd/pspbtcnf_09g_dc.bin", pspbtcnf_09g_dc, size_pspbtcnf_09g_dc) != size_pspbtcnf_09g_dc)
-        ErrorExit(1000, "Error writing pspbtcnf_09g_dc.bin");
-    
-    if (WriteFile(ARK_DC_PATH "/kd/pspbtcnf_11g_dc.bin", pspbtcnf_11g_dc, size_pspbtcnf_11g_dc) != size_pspbtcnf_11g_dc)
-        ErrorExit(1000, "Error writing pspbtcnf_11g_dc.bin");
-
     
     if (CopyFile("usbdevice.prx", ARK_DC_PATH "/kd/usbdevice.prx") < 0
             && CopyFile("ms0:/PSP/LIBS/usbdevice.prx", ARK_DC_PATH "/kd/usbdevice.prx") < 0){
@@ -850,14 +814,6 @@ static void WriteDCFiles()
     if (CopyFile("vlf.prx", ARK_DC_PATH "/vsh/module/vlf.prx") < 0
             && CopyFile("ms0:/PSP/LIBS/vlf.prx", ARK_DC_PATH "/vsh/module/vlf.prx") < 0){
         ErrorExit(1000, "Error copying vlf.prx");
-    }
-
-    if (CopyFile("dcman.prx", ARK_DC_PATH "/kd/dcman.prx") < 0){
-        ErrorExit(1000, "Error copying dcman.prx");
-    }
-
-    if (CopyFile("resurrection.prx", ARK_DC_PATH "/vsh/module/resurrection.prx") < 0){
-        ErrorExit(1000, "Error copying resurrection.prx");
     }
 }
 
@@ -1100,6 +1056,9 @@ int install_thread(SceSize args, void *argp)
 
     sceKernelDelayThread(250000);
     SetProgress(95, 1);
+
+    SetStatus("Extracting " DC10_ARK);
+    extractArchive(DC10_ARK, ARK_DC_PATH);
 
     SetStatus("Extracting " FLASH0_ARK);
     extractArchive(findPath(flash0_paths, NELEMS(flash0_paths)), ARK_DC_PATH);

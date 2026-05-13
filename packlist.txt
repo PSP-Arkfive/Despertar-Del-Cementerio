@@ -1,0 +1,11 @@
+/tmctrl.prx,TimeMachine/tmctrl.prx
+/kd/dcman.prx,DCManager/dcman.prx
+/vsh/module/resurrection.prx,VUnbricker/resurrection.prx
+/kd/pspbtcnf_dc.bin,btcnf/pspbtcnf_dc.bin
+/kd/pspbtcnf_02g_dc.bin,btcnf/pspbtcnf_02g_dc.bin
+/kd/pspbtcnf_03g_dc.bin,btcnf/pspbtcnf_03g_dc.bin
+/kd/pspbtcnf_04g_dc.bin,btcnf/pspbtcnf_04g_dc.bin
+/kd/pspbtcnf_05g_dc.bin,btcnf/pspbtcnf_05g_dc.bin
+/kd/pspbtcnf_07g_dc.bin,btcnf/pspbtcnf_07g_dc.bin
+/kd/pspbtcnf_09g_dc.bin,btcnf/pspbtcnf_09g_dc.bin
+/kd/pspbtcnf_11g_dc.bin,btcnf/pspbtcnf_11g_dc.bin
