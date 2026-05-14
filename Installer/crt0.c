@@ -7,14 +7,18 @@
 
 #include <kubridge.h>
 #include <vlf.h>
-#include <screenprinter.h>
+#include <colordebugger.h>
+#include <tinyfont.h>
 
 extern char boot_path[256];
 extern int app_main(int argc, char *argv[]);
 
 static void SimpleErrorExit(int milisecs, char* errortext, int errorcode){
-    initScreen(&sceDisplaySetFrameBuf);
-    PRTSTR2("ERROR: %s (%p)", (u32)errortext, (u32)errorcode);
+    char msg[64];
+    sceDisplaySetFrameBuf((void *)0x04000000, 512, PSP_DISPLAY_PIXEL_FORMAT_8888, 1);
+    colorDebug(0);
+    snprintf(msg, sizeof(msg), "ERROR: %s (%p)", (u32)errortext, (u32)errorcode);
+    tinyFontPrintTextScreenBuf((void *)0x44000000, msx, 10, 10, msg, 0xFFFFFFFF, NULL);
     sceKernelDelayThread(milisecs*1000);
     sceKernelExitGame();
 }
