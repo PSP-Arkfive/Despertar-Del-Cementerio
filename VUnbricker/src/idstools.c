@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+#include <systemctrl.h>
 #include <pspipl_update.h>
 #include <vlf.h>
 
@@ -49,7 +50,7 @@ void PreCreateIdsPage();
 
 static int LoadRegeneration()
 {    
-    SceUID mod = sceKernelLoadModule("flash0:/kd/idsregeneration.prx", 0, NULL);
+    SceUID mod = sceKernelLoadModule(IDSREG_PRX_FLASH, 0, NULL);
     if (mod < 0 && mod != SCE_KERNEL_ERROR_EXCLUSIVE_LOAD)
         return mod;
 
