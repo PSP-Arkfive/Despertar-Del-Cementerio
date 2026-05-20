@@ -1240,7 +1240,7 @@ int app_main()
         ErrorExit(1000, "There is not enough RAM memory.\n");
     }
 
-    int tt = vlfGuiAddText(0, 0, "DC-ARK");
+    int tt = vlfGuiAddText(0, 0, "DC10 ARK-5");
     int tp = vlfGuiAddPictureResource("update_plugin", "tex_update_icon", 0, 0);
     //int tp = vlfGuiAddPictureFile("m33.tga", 0, 0);
     vlfGuiChangeCharacterByButton('*', VLF_ENTER);
