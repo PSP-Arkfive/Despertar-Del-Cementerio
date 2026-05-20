@@ -1036,6 +1036,7 @@ int install_thread(SceSize args, void *argp)
     sceIoMkdir(ARK_DC_PATH "/vsh/resource", 0777);
     sceIoMkdir(ARK_DC_PATH "/vsh/theme", 0777);
     sceIoMkdir(ARK_DC_PATH "/registry", 0777);
+    sceIoMkdir(ARK_DC_PATH "/" DEFAULT_ARK_FOLDER, 0777);
 
     if (g_cancel)
         CancelInstall();
@@ -1057,12 +1058,16 @@ int install_thread(SceSize args, void *argp)
     sceKernelDelayThread(250000);
     SetProgress(95, 1);
 
+    // Install DC files
     SetStatus("Extracting " DC10_ARK);
     extractArchive(DC10_ARK, ARK_DC_PATH);
 
+    // Install ARK files
     SetStatus("Extracting " FLASH0_ARK);
     extractArchive(findPath(flash0_paths, NELEMS(flash0_paths)), ARK_DC_PATH);
+    CopyFile(DEFAULT_ARK_PATH VSH_MENU, VSH_MENU_DC);
 
+    // Install cIPL files
     SetStatus("Extracting " CIPL_ARK);
     extractArchive(findPath(cipl_paths, NELEMS(cipl_paths)), ARK_DC_PATH);
 
