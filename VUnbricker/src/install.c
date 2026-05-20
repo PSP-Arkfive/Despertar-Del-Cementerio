@@ -654,6 +654,7 @@ const char *f0_ark[] =
     "kd/ark_xmbctrl.prx",
     "kd/usbdevice.prx",
     "kd/idsregeneration.prx",
+    "vsh/module/ark_satelite.prx",
 };
 
 int LoadUpdaterModules()
@@ -969,28 +970,28 @@ int install_thread(SceSize args, void *argp)
 
     switch (model)
     {
-        case 0:
+        case PSP_1000:
         	file_count += sizeof(f0_01g) / sizeof(f0_01g[0]);
         	break;
-        case 1:
+        case PSP_2000:
         	file_count += sizeof(f0_02g) / sizeof(f0_02g[0]);
         	break;
-        case 2:
+        case PSP_3000:
         	file_count += sizeof(f0_03g) / sizeof(f0_03g[0]);
         	break;
-        case 3:
+        case PSP_4000:
         	file_count += sizeof(f0_04g) / sizeof(f0_04g[0]);
         	break;
-        case 4:
+        case PSP_5000:
         	file_count += sizeof(f0_05g) / sizeof(f0_05g[0]);
         	break;
-        case 6:
+        case PSP_7000:
         	file_count += sizeof(f0_07g) / sizeof(f0_07g[0]);
         	break;
-        case 8:
+        case PSP_9000:
         	file_count += sizeof(f0_09g) / sizeof(f0_09g[0]);
         	break;
-        case 10:
+        case PSP_11000:
         	file_count += sizeof(f0_11g) / sizeof(f0_11g[0]);
         	break;
         default:
@@ -1092,35 +1093,35 @@ int install_thread(SceSize args, void *argp)
     
     switch (model)
     {
-        case 0:
+        case PSP_1000:
         	CopyFileList(fw, f0_01g, sizeof(f0_01g) / sizeof(f0_01g[0]), ctr, file_count);
         	ctr += sizeof(f0_01g) / sizeof(f0_01g[0]);
         	break;
-        case 1:
+        case PSP_2000:
         	CopyFileList(fw, f0_02g, sizeof(f0_02g) / sizeof(f0_02g[0]), ctr, file_count);
         	ctr += sizeof(f0_02g) / sizeof(f0_02g[0]);
         	break;
-        case 2:
+        case PSP_3000:
         	CopyFileList(fw, f0_03g, sizeof(f0_03g) / sizeof(f0_03g[0]), ctr, file_count);
         	ctr += sizeof(f0_03g) / sizeof(f0_03g[0]);
         	break;
-        case 3:
+        case PSP_4000:
         	CopyFileList(fw, f0_04g, sizeof(f0_04g) / sizeof(f0_04g[0]), ctr, file_count);
         	ctr += sizeof(f0_04g) / sizeof(f0_04g[0]);
         	break;
-        case 4:
+        case PSP_5000:
         	CopyFileList(fw, f0_05g, sizeof(f0_05g) / sizeof(f0_05g[0]), ctr, file_count);
         	ctr += sizeof(f0_05g) / sizeof(f0_05g[0]);
         	break;
-        case 6:
+        case PSP_7000:
         	CopyFileList(fw, f0_07g, sizeof(f0_07g) / sizeof(f0_07g[0]), ctr, file_count);
         	ctr += sizeof(f0_07g) / sizeof(f0_07g[0]);
         	break;
-        case 8:
+        case PSP_9000:
         	CopyFileList(fw, f0_09g, sizeof(f0_09g) / sizeof(f0_09g[0]), ctr, file_count);
         	ctr += sizeof(f0_09g) / sizeof(f0_09g[0]);
         	break;
-        case 10:
+        case PSP_11000:
         	CopyFileList(fw, f0_11g, sizeof(f0_11g) / sizeof(f0_11g[0]), ctr, file_count);
         	ctr += sizeof(f0_11g) / sizeof(f0_11g[0]);
         	break;
@@ -1160,29 +1161,35 @@ int install_thread(SceSize args, void *argp)
     {
         switch (model)
         {
-        	case 0: ipl_name = "flash0:/ipl_01g.bin"; break;
-        	case 1: ipl_name = "flash0:/ipl_02g.bin"; break;
-        	case 2: ipl_name = "flash0:/ipl_03g.bin"; ipl_key = 1; break;
-        	case 3: ipl_name = "flash0:/ipl_04g.bin"; ipl_key = 1; break;
-        	case 4: ipl_name = "flash0:/ipl_05g.bin"; ipl_key = 2; break;
-        	case 6: ipl_name = "flash0:/ipl_07g.bin"; ipl_key = 1; break;
-        	case 8: ipl_name = "flash0:/ipl_09g.bin"; ipl_key = 1; break;
-        	case 10: ipl_name = "flash0:/ipl_11g.bin"; ipl_key = 1; break;
+        	case PSP_1000:  ipl_name = "flash0:/ipl_01g.bin";               break;
+        	case PSP_2000:  ipl_name = "flash0:/ipl_02g.bin";               break;
+        	case PSP_3000:  ipl_name = "flash0:/ipl_03g.bin";  ipl_key = 1; break;
+        	case PSP_4000:  ipl_name = "flash0:/ipl_04g.bin";  ipl_key = 1; break;
+        	case PSP_5000:  ipl_name = "flash0:/ipl_05g.bin";  ipl_key = 2; break;
+        	case PSP_7000:  ipl_name = "flash0:/ipl_07g.bin";  ipl_key = 1; break;
+        	case PSP_9000:  ipl_name = "flash0:/ipl_09g.bin";  ipl_key = 1; break;
+        	case PSP_11000: ipl_name = "flash0:/ipl_11g.bin";  ipl_key = 1; break;
         	default: InstallError(fw, "Unsupported model.");
         }
     }
     else
     {
+        // install CFW files before installing cIPL
+        SceIoStat stat;
+        int file_count = sizeof(f0_ark) / sizeof(f0_ark[0]);
+        if (sceIoGetstat(VSH_MENU_DC, &stat) < 0) file_count--; // VSH Menu is optional
+        CopyFileList(fw, f0_ark, sizeof(f0_ark) / sizeof(f0_ark[0]), 0, file_count);
+
         switch (model)
         {
-        	case 0:  ipl_name = "flash0:/cipl_01g.bin"; break;
-        	case 1:  ipl_name = "flash0:/cipl_02g.bin"; break;
-        	case 2:  ipl_name = "flash0:/cipl_03g.bin"; break;
-        	case 3:  ipl_name = "flash0:/cipl_04g.bin"; break;
-        	case 4:  ipl_name = "flash0:/cipl_05g.bin"; break;
-        	case 6:  ipl_name = "flash0:/cipl_07g.bin"; break;
-        	case 8:  ipl_name = "flash0:/cipl_09g.bin"; break;
-        	case 10: ipl_name = "flash0:/cipl_11g.bin"; break;
+        	case PSP_1000:  ipl_name = "flash0:/cipl_01g.bin"; break;
+        	case PSP_2000:  ipl_name = "flash0:/cipl_02g.bin"; break;
+        	case PSP_3000:  ipl_name = "flash0:/cipl_03g.bin"; break;
+        	case PSP_4000:  ipl_name = "flash0:/cipl_04g.bin"; break;
+        	case PSP_5000:  ipl_name = "flash0:/cipl_05g.bin"; break;
+        	case PSP_7000:  ipl_name = "flash0:/cipl_07g.bin"; break;
+        	case PSP_9000:  ipl_name = "flash0:/cipl_09g.bin"; break;
+        	case PSP_11000: ipl_name = "flash0:/cipl_11g.bin"; break;
         	default: InstallError(fw, "Unsupported model.");
         }
     }
@@ -1204,12 +1211,6 @@ int install_thread(SceSize args, void *argp)
         InstallError(fw, "Error in pspIplUpdateSetIpl");
 
     sceKernelDelayThread(900000);
-
-    if (fw != FW_OFW)
-    {
-        int file_count = file_count += sizeof(f0_ark) / sizeof(f0_ark[0]);
-        CopyFileList(fw, f0_ark, sizeof(f0_ark) / sizeof(f0_ark[0]), 0, file_count);
-    }
 
     SetProgress(100, 1);
     vlfGuiAddEventHandler(0, 600000, OnInstallComplete, &fw);
