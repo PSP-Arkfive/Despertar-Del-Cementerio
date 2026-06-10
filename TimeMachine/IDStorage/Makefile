@@ -30,4 +30,4 @@ PSPSDK=$(shell psp-config --pspsdk-path)
 include $(PSPSDK)/lib/build.mak
 
 clean:
-	$(Q)rm -rf *.o *.elf *.prx exports.o exports.c
+	rm -rf *.o *.elf *.prx exports.o exports.c

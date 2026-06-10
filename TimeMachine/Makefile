@@ -11,13 +11,13 @@ OBJS = \
 all: cptbl.h $(TARGET).prx tmctrl.h
 
 tmctrl.h: $(TARGET).prx
-	$(Q)bin2c $(TARGET).prx tmctrl.h tmctrl
+	bin2c $(TARGET).prx tmctrl.h tmctrl
 
 cptbl.h:
-	$(Q)dd if=../Resources/cptbl.dat of=cptbl.dat bs=2048 conv=sync
-	$(Q)$(PY) $(CFWSDK)/build-tools/ciso/ciso.py -c 1 cptbl.dat cptbl.cso
-	$(Q)bin2c cptbl.cso cptbl.h cptbl
-	$(Q)rm cptbl.dat cptbl.cso
+	dd if=../Resources/cptbl.dat of=cptbl.dat bs=2048 conv=sync
+	$(PY) $(CFWSDK)/build-tools/ciso/ciso.py -c 1 cptbl.dat cptbl.cso
+	bin2c cptbl.cso cptbl.h cptbl
+	rm cptbl.dat cptbl.cso
 
 INCDIR = rebootex
 CFLAGS = -std=c99 -Os -G0 -Wall -fno-pic -fshort-wchar
@@ -41,4 +41,4 @@ PSPSDK=$(shell psp-config --pspsdk-path)
 include $(PSPSDK)/lib/build.mak
 
 clean:
-	$(Q)rm -rf *.o *.elf *.prx exports.o exports.c tmctrl.h cptbl.h
+	rm -rf *.o *.elf *.prx exports.o exports.c tmctrl.h cptbl.h
