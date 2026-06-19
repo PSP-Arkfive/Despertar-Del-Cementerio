@@ -159,32 +159,42 @@ def run() -> None:
 
         # Download pspdecrypt from John
         if ostype == 'Linux':
-            resp = requests.get('https://github.com/krazynez/pspdecrypt/releases/download/latest/pspdecrypt.zip', timeout=10, verify=False)
-            with open('pspdecrypt-1.0-linux.zip', 'wb') as f:
+            resp = requests.get('https://github.com/krazynez/pspdecrypt/releases/download/latest/pspdecrypt-linux.zip', timeout=10, verify=False)
+            with open('pspdecrypt-linux.zip', 'wb') as f:
                 f.write(resp.content)
                 resp.close()
-            with ZipFile('pspdecrypt-1.0-linux.zip', 'r') as zObject:
+            with ZipFile('pspdecrypt-linux.zip', 'r') as zObject:
                 zObject.extractall(path=f'{os.getcwd()}/')
             os.system('chmod 755 pspdecrypt')
             x['state'] = 'normal'
         elif ostype == 'Windows':
-            resp = requests.get('https://github.com/John-K/pspdecrypt/releases/download/1.0/pspdecrypt-1.0-windows.zip', timeout=10, verify=False)
-            with open('pspdecrypt-1.0-windows.zip', 'wb') as f:
+            resp = requests.get('https://github.com/krazynez/pspdecrypt/releases/download/latest/pspdecrypt-windows.zip', timeout=10, verify=False)
+            with open('pspdecrypt-windows.zip', 'wb') as f:
                 f.write(resp.content)
                 resp.close()
-            with ZipFile('pspdecrypt-1.0-windows.zip', 'r') as zObject:
+            with ZipFile('pspdecrypt-windows.zip', 'r') as zObject:
                 zObject.extractall(path=f'{os.getcwd()}\\')
             os.system('oschmod 755 pspdecrypt.exe')
             x['state'] = 'normal'
-        elif ostype == 'Darwin':
-            resp = requests.get('https://github.com/John-K/pspdecrypt/releases/download/1.0/pspdecrypt-1.0-macos.zip', timeout=10, verify=False)
-            with open('pspdecrypt-1.0-macos.zip', 'wb') as f:
+        elif ostype == 'Darwin' and platform.machine() == 'x86_64':
+            resp = requests.get('https://github.com/krazynez/pspdecrypt/releases/download/latest/pspdecrypt-macos-x86_64.zip', timeout=10, verify=False)
+            with open('pspdecrypt-macos-x86_64.zip', 'wb') as f:
                 f.write(resp.content)
                 resp.close()
-            with ZipFile('pspdecrypt-1.0-macos.zip', 'r') as zObject:
+            with ZipFile('pspdecrypt-macos-x86_64.zip', 'r') as zObject:
                 zObject.extractall(path=f'{os.getcwd()}/')
             os.system('oschmod 755 pspdecrypt')
             x['state'] = 'normal'
+        elif ostype == 'Darwin' and platform.machine() == 'arm64':
+            resp = requests.get('https://github.com/krazynez/pspdecrypt/releases/download/latest/pspdecrypt-macos-arm64.zip', timeout=10, verify=False)
+            with open('pspdecrypt-macos-arm64.zip', 'wb') as f:
+                f.write(resp.content)
+                resp.close()
+            with ZipFile('pspdecrypt-macos-arm64.zip', 'r') as zObject:
+                zObject.extractall(path=f'{os.getcwd()}/')
+            os.system('oschmod 755 pspdecrypt')
+            x['state'] = 'normal'
+
         else:
             print('\nERR: unsupported platform...\n')
             return
