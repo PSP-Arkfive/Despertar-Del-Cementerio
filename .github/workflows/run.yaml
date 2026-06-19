@@ -51,13 +51,13 @@ jobs:
       - name: Compress
         run: |
           cd dist
-          zip -r ../DCARK.zip .
+          zip -r ../DC10.zip .
       
       - name: Upload
         uses: actions/upload-artifact@v7
         with:
           name: DCARK-release
-          path: DCARK.zip
+          path: DC10.zip
   release:
     needs: build
     runs-on: ubuntu-latest
@@ -73,7 +73,7 @@ jobs:
           tag_name: latest
           name: DCARK pre-release
           prerelease: true
-          files: DCARK.zip
+          files: DC10.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
