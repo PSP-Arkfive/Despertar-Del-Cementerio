@@ -44,6 +44,8 @@ all: btcnf dc
 	cp Resources/LIBS/usbdevice.prx MagicMemoryCreator/TM/DCARK/kd/
 	# Copy msipl.bin to DAM
 	cp CIPL/msipl.bin MagicMemoryCreator/TM/DCARK/
+	cp CIPL/msipl.old MagicMemoryCreator/TM/DCARK/payload_01g.bin
+	cp CIPL/msipl.old MagicMemoryCreator/TM/DCARK/payload_02g.bin
 	cp CIPL/msipl.raw MagicMemoryCreator/TM/DCARK/
 	cp CIPL/msipl.bin MagicMemoryCreator/
 	# Copy MagicMemoryCreator
@@ -85,3 +87,4 @@ clean:
 	rm -rf MagicMemoryCreator/TM/DCARK/vsh/resource/
 	rm -rf ARK-5.zip CustomIPL.zip FLASH0 CIPL
 	rm -rf MagicMemoryCreator/TM/DCARK/msipl.raw
+	rm -rf MagicMemoryCreator/TM/DCARK/payload_*.bin
