@@ -13,6 +13,7 @@ import time
 import msipl_installer
 import urllib3; urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from zipfile import ZipFile
+from pathlib import Path
 
 # globals
 go = False
@@ -30,7 +31,7 @@ possible_drive = ['-']
 windows_disk_letter = {}
 deviceID = {}
 m=tk.Tk()
-m.title('DC-ARK Maker')
+m.title('DC-ARK Maker (DAM)')
 
 # variable setups
 var = tk.StringVar(m)
@@ -60,8 +61,16 @@ elif ostype.lower() == 'linux':
     for i in out:
         possible_drive.append(i)
 else:
-    out = subprocess.Popen(["""diskutil list external | awk '/external/ { gsub(/\/dev\//, ""); print $1}'"""], shell=True, stdout=subprocess.PIPE)
+    cmd = r"diskutil list external | awk '/external/ { gsub(/\/dev\//, \"\"); print $1}'"
+
+    out = subprocess.Popen(
+        cmd,
+        shell=True,
+        stdout=subprocess.PIPE
+    )
+
     out = out.stdout.read().decode().splitlines()
+
     for i in out:
         possible_drive.append(i)
 
@@ -150,7 +159,7 @@ def run() -> None:
 
         # Download pspdecrypt from John
         if ostype == 'Linux':
-            resp = requests.get('https://github.com/John-K/pspdecrypt/releases/download/1.0/pspdecrypt-1.0-linux.zip', timeout=10, verify=False)
+            resp = requests.get('https://github.com/krazynez/pspdecrypt/releases/download/latest/pspdecrypt.zip', timeout=10, verify=False)
             with open('pspdecrypt-1.0-linux.zip', 'wb') as f:
                 f.write(resp.content)
                 resp.close()
@@ -343,7 +352,6 @@ else:
     if ctypes.windll.shell32.IsUserAnAdmin() != 1:
         print('\nSorry this needs to run as root/admin!\n')
         sys.exit(1)
-
 
 # Setup
 m.minsize(320, 230)

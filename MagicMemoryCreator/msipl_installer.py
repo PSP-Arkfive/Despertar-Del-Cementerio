@@ -95,7 +95,7 @@ def main(args):
             bytesPerSector = int(cat.stdout)
             lsblk = subprocess.run(['lsblk', '-dno', 'name,tran,rm'], stdout=subprocess.PIPE, universal_newlines=True)
             for line in lsblk.stdout.splitlines():
-                m = re.search('(\w+)\s+(\w+)\s+(\d)', line)
+                m = re.search(r'(\w+)\s+(\w+)\s+(\d)', line)
                 if m:
                     name, type, rw = m.group(1), m.group(2), m.group(3)
                     if name == args.devname:
