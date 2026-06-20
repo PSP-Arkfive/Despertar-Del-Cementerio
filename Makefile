@@ -57,9 +57,12 @@ all: btcnf dc
 	cp CIPL/msipl.bin MagicMemoryCreator/
 	cp CIPL/ipl_01g.bin MagicMemoryCreator/TM/DCARK/nandipl_01g.bin
 	cp CIPL/ipl_02g.bin MagicMemoryCreator/TM/DCARK/nandipl_02g.bin
+	# Copy dcman to MagicMemoryCreator
+	cp DCManager/dcman.prx MagicMemoryCreator/TM/DCARK/kd/
 	# Copy MagicMemoryCreator
 	cp -r MagicMemoryCreator/ dist/
-	cp DCManager/dcman.prx MagicMemoryCreator/TM/DCARK/kd/
+	# mkdir ARK_01234 for DAM
+	mkdir MagicMemoryCreator/TM/DCARK/ARK_01234
 
 btcnf:
 	$(PYTHON) $(BUILDTOOLS)/btcnf.py build btcnf/pspbtcnf_dc.txt
@@ -100,3 +103,4 @@ clean:
 	rm -rf MagicMemoryCreator/TM/DCARK/payload_*.bin
 	rm -f MagicMemoryCreator/TM/DCARK/msipl.old
 	rm -rf MagicMemoryCreator/TM/DCARK/registry/
+	rm -rf MagicMemoryCreator/TM/DCARK/ARK_01234
