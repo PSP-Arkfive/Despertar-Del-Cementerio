@@ -165,6 +165,7 @@ def run() -> None:
                 resp.close()
             with ZipFile('pspdecrypt-linux.zip', 'r') as zObject:
                 zObject.extractall(path=f'{os.getcwd()}/')
+                shutil.move('linux/pspdecrypt', './pspdecrypt')
             os.system('chmod 755 pspdecrypt')
             x['state'] = 'normal'
         elif ostype == 'Windows':
@@ -174,6 +175,7 @@ def run() -> None:
                 resp.close()
             with ZipFile('pspdecrypt-windows.zip', 'r') as zObject:
                 zObject.extractall(path=f'{os.getcwd()}\\')
+                shutil.move('windows/pspdecrypt', './pspdecrypt')
             os.system('oschmod 755 pspdecrypt.exe')
             x['state'] = 'normal'
         elif ostype == 'Darwin' and platform.machine() == 'x86_64':
@@ -183,6 +185,7 @@ def run() -> None:
                 resp.close()
             with ZipFile('pspdecrypt-macos-x86_64.zip', 'r') as zObject:
                 zObject.extractall(path=f'{os.getcwd()}/')
+                shutil.move('macos-x86_64/pspdecrypt', './pspdecrypt')
             os.system('oschmod 755 pspdecrypt')
             x['state'] = 'normal'
         elif ostype == 'Darwin' and platform.machine() == 'arm64':
@@ -192,6 +195,7 @@ def run() -> None:
                 resp.close()
             with ZipFile('pspdecrypt-macos-arm64.zip', 'r') as zObject:
                 zObject.extractall(path=f'{os.getcwd()}/')
+                shutil.move('macos-arm64/pspdecrypt', './pspdecrypt')
             os.system('oschmod 755 pspdecrypt')
             x['state'] = 'normal'
 

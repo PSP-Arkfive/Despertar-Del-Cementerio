@@ -20,6 +20,7 @@ all: btcnf dc
 	rm FLASH0.ARK
 	mv flash0 FLASH0
 	cp FLASH0/*.prx MagicMemoryCreator/TM/DCARK/kd/
+	rm -rf MagicMemoryCreator/TM/DCARK/kd/ark_vita*.prx
 	# btcnf files for DAM
 	cp -r btcnf/pspbtcnf_*dc.bin MagicMemoryCreator/TM/DCARK/kd/
 	# CIPL files for DAM
@@ -28,8 +29,12 @@ all: btcnf dc
 	mv CustomIPL CIPL
 	cd CIPL && $(PYTHON) $(BUILDTOOLS)/pack/pack.py -e CIPL.ARK
 	cp CIPL/*.prx MagicMemoryCreator/TM/DCARK/
+	rm MagicMemoryCreator/TM/DCARK/kpspident.prx
+	cp CIPL/*.bin MagicMemoryCreator/TM/DCARK/
 	# Copy intrafont to DAM
 	cp Resources/LIBS/intraFont-vlf.prx MagicMemoryCreator/TM/DCARK/vsh/module/intrafont.prx
+	# Copy resurrection
+	cp VUnbricker/resurrection.prx MagicMemoryCreator/TM/DCARK/vsh/module/
 	# Copy vlf to DAM
 	cp Resources/LIBS/vlf.prx MagicMemoryCreator/TM/DCARK/vsh/module/
 	# Copy idregen to DAM
@@ -86,5 +91,7 @@ clean:
 	rm -rf MagicMemoryCreator/TM/DCARK/vsh/etc/
 	rm -rf MagicMemoryCreator/TM/DCARK/vsh/resource/
 	rm -rf ARK-5.zip CustomIPL.zip FLASH0 CIPL
-	rm -rf MagicMemoryCreator/TM/DCARK/msipl.raw
+	rm -f MagicMemoryCreator/TM/DCARK/msipl.raw
 	rm -rf MagicMemoryCreator/TM/DCARK/payload_*.bin
+	rm -f MagicMemoryCreator/TM/DCARK/msipl.old
+	rm -rf MagicMemoryCreator/TM/DCARK/registry/
