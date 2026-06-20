@@ -32,6 +32,7 @@ all: btcnf dc
 	rm MagicMemoryCreator/TM/DCARK/kpspident.prx
 	cp CIPL/*.bin MagicMemoryCreator/TM/DCARK/
 	# Copy intrafont to DAM
+	mkdir -p MagicMemoryCreator/TM/DCARK/vsh/module
 	cp Resources/LIBS/intraFont-vlf.prx MagicMemoryCreator/TM/DCARK/vsh/module/intrafont.prx
 	# Copy resurrection
 	cp VUnbricker/resurrection.prx MagicMemoryCreator/TM/DCARK/vsh/module/
