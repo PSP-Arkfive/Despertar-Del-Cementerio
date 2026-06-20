@@ -50,12 +50,16 @@ all: btcnf dc
 	cp Resources/LIBS/usbdevice.prx MagicMemoryCreator/TM/DCARK/kd/
 	# Copy msipl.bin to DAM
 	cp CIPL/msipl.bin MagicMemoryCreator/TM/DCARK/
+	cp CIPL/msipl.old MagicMemoryCreator/TM/DCARK/
 	cp CIPL/msipl.old MagicMemoryCreator/TM/DCARK/payload_01g.bin
 	cp CIPL/msipl.old MagicMemoryCreator/TM/DCARK/payload_02g.bin
 	cp CIPL/msipl.raw MagicMemoryCreator/TM/DCARK/
 	cp CIPL/msipl.bin MagicMemoryCreator/
+	cp CIPL/ipl_01g.bin MagicMemoryCreator/TM/DCARK/nandipl_01g.bin
+	cp CIPL/ipl_02g.bin MagicMemoryCreator/TM/DCARK/nandipl_02g.bin
 	# Copy MagicMemoryCreator
 	cp -r MagicMemoryCreator/ dist/
+	cp DCManager/dcman.prx MagicMemoryCreator/TM/DCARK/kd/
 
 btcnf:
 	$(PYTHON) $(BUILDTOOLS)/btcnf.py build btcnf/pspbtcnf_dc.txt
