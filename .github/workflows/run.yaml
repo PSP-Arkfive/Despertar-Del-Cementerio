@@ -71,8 +71,9 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: latest
-          name: DCARK pre-release
-          prerelease: true
+          name: DCARK
+          prerelease: false
+          make_latest: true
           files: DC10.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
