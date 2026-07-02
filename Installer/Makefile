@@ -21,10 +21,10 @@ PSP_FW_VERSION = 660
 
 EXTRA_TARGETS = EBOOT.PBP
 PSP_EBOOT_TITLE = ARK DC Installer
-#PSP_EBOOT_ICON = res/cementerio.png
-PSP_EBOOT_ICON1 = ICON1.PMF
-PSP_EBOOT_SND0 = SND0.AT3
-#PSP_EBOOT_PIC0 = res/despertar.png
+PSP_EBOOT_ICON = res/cementerio.png
+PSP_EBOOT_ICON1 = res/icon1.pmf
+PSP_EBOOT_SND0 = res/snd0.at3
+PSP_EBOOT_PIC0 = res/despertar.png
 BUILD_PRX = 1
 
 all: $(TARGET).prx
