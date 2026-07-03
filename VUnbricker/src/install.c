@@ -1178,7 +1178,7 @@ int install_thread(SceSize args, void *argp)
         SceIoStat stat;
         int file_count = sizeof(f0_ark) / sizeof(f0_ark[0]);
         if (sceIoGetstat(VSH_MENU_DC, &stat) < 0) file_count--; // VSH Menu is optional
-        CopyFileList(fw, f0_ark, sizeof(f0_ark) / sizeof(f0_ark[0]), 0, file_count);
+        CopyFileList(fw, f0_ark, file_count, 0, file_count);
 
         switch (model)
         {
