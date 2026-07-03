@@ -104,3 +104,5 @@ clean:
 	rm -f MagicMemoryCreator/TM/DCARK/msipl.old
 	rm -rf MagicMemoryCreator/TM/DCARK/registry/
 	rm -rf MagicMemoryCreator/TM/DCARK/ARK_01234
+	rm -f ARK5.zip
+	rm -f CustomIPL.zip
