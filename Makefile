@@ -12,7 +12,7 @@ all: btcnf dc
 	cp Resources/ARK/* dist/DC10/
 	cp Resources/LIBS/* dist/DC10/
 	# DAM
-	cp -r MagicMemoryCreator dist/MagicMemoryCreator
+	cp -r MagicMemoryCreator dist/
 	mkdir dist/MagicMemoryCreator/TM/DCARK/ARK_01234
 	cp btcnf/*.bin dist/MagicMemoryCreator/TM/DCARK/kd/
 	cp TimeMachine/tmctrl.prx dist/MagicMemoryCreator/TM/DCARK/
