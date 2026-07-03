@@ -14,6 +14,7 @@ all: btcnf dc
 	# DAM
 	cp -r MagicMemoryCreator dist/
 	mkdir dist/MagicMemoryCreator/TM/DCARK/ARK_01234
+    mkdir -p dist/MagicMemoryCreator/TM/DCARK/vsh/module/
 	cp btcnf/*.bin dist/MagicMemoryCreator/TM/DCARK/kd/
 	cp TimeMachine/tmctrl.prx dist/MagicMemoryCreator/TM/DCARK/
 	cp DCManager/dcman.prx dist/MagicMemoryCreator/TM/DCARK/kd/
