@@ -29,8 +29,8 @@ all: btcnf dc
 	cp Resources/LIBS/usbdevice.prx dist/MagicMemoryCreator/TM/DCARK/kd/
 	$(PYTHON) $(BUILDTOOLS)/pack/pack.py -e Resources/ARK/CIPL.ARK dist/MagicMemoryCreator/TM/DCARK/
 	$(PYTHON) $(BUILDTOOLS)/pack/pack.py -e Resources/ARK/FLASH0.ARK dist/MagicMemoryCreator/TM/DCARK/kd/
-	cp msipl.old dist/MagicMemoryCreator/TM/DCARK/payload_01g.bin
-	cp msipl.old dist/MagicMemoryCreator/TM/DCARK/payload_02g.bin
+	cp dist/MagicMemoryCreator/TM/DCARK/msipl.old dist/MagicMemoryCreator/TM/DCARK/payload_01g.bin
+	cp dist/MagicMemoryCreator/TM/DCARK/msipl.old dist/MagicMemoryCreator/TM/DCARK/payload_02g.bin
 	cp ipl_01g.bin dist/MagicMemoryCreator/TM/DCARK/nandipl_01g.bin
 	cp ipl_02g.bin dist/MagicMemoryCreator/TM/DCARK/nandipl_02g.bin
 
