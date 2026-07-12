@@ -31,8 +31,8 @@ all: btcnf dc
 	$(PYTHON) $(BUILDTOOLS)/pack/pack.py -e Resources/ARK/FLASH0.ARK dist/MagicMemoryCreator/TM/DCARK/kd/
 	cp dist/MagicMemoryCreator/TM/DCARK/msipl.old dist/MagicMemoryCreator/TM/DCARK/payload_01g.bin
 	cp dist/MagicMemoryCreator/TM/DCARK/msipl.old dist/MagicMemoryCreator/TM/DCARK/payload_02g.bin
-	cp ipl_01g.bin dist/MagicMemoryCreator/TM/DCARK/nandipl_01g.bin
-	cp ipl_02g.bin dist/MagicMemoryCreator/TM/DCARK/nandipl_02g.bin
+	cp dist/MagicMemoryCreator/TM/DCARK/ipl_01g.bin dist/MagicMemoryCreator/TM/DCARK/nandipl_01g.bin
+	cp dist/MagicMemoryCreator/TM/DCARK/ipl_02g.bin dist/MagicMemoryCreator/TM/DCARK/nandipl_02g.bin
 
 btcnf:
 	$(PYTHON) $(BUILDTOOLS)/btcnf.py build btcnf/pspbtcnf_dc.txt
