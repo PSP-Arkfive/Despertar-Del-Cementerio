@@ -10,6 +10,7 @@
 #include <colordebugger.h>
 #include <tinyfont.h>
 
+
 extern char boot_path[256];
 extern int app_main(int argc, char *argv[]);
 
@@ -46,7 +47,8 @@ int start_thread(SceSize args, void *argp)
         boot_path[last_trail] = 0;
 
     sceIoChdir(boot_path);
-
+    
+	
     // load intraFont-vlf
     mod = kuKernelLoadModule("intraFont-vlf.prx", 0, NULL);
     if (mod < 0) mod = kuKernelLoadModule("ms0:/PSP/LIBS/intraFont-vlf.prx", 0, NULL); // retry LIBS folder
@@ -64,7 +66,7 @@ int start_thread(SceSize args, void *argp)
     // start vlf
     mod = sceKernelStartModule(mod, args, argp, NULL, NULL);
     if (mod < 0) SimpleErrorExit(5000, "Filed to start module vlf.prx", mod);
-    
+
     vlfGuiInit(-1, app_main);
     
     return sceKernelExitDeleteThread(0);

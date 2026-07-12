@@ -19,9 +19,10 @@
 #include <kubridge.h>
 #include <vlf.h>
 
-
 PSP_MODULE_INFO("VResurrection_Manager", 0x800, 2, 0);
+PSP_HEAP_SIZE_KB(1024);
 PSP_MAIN_THREAD_ATTR(0);
+
 
 #define UPDATER_VER_STR "6.61"
 #define UPDATER "661.PBP"
@@ -586,10 +587,12 @@ static void Extract661Modules()
 
     SetStatus("Extracting " UPDATER_VER_STR " updater modules...");
         
-    if (ReadFile("ms0:/" UPDATER_GO, 0, pbp_header, sizeof(pbp_header)) != sizeof(pbp_header)) {
-        if (ReadFile("ms0:/" UPDATER, 0, pbp_header, sizeof(pbp_header)) != sizeof(pbp_header))
+    if (ReadFile("ms0:/" UPDATER_GO, 0, pbp_header, sizeof(pbp_header)) != sizeof(pbp_header) && 
+			ReadFile("ms0:/PSP/GAME/DC10/" UPDATER_GO, 0, pbp_header, sizeof(pbp_header)) != sizeof(pbp_header)) {
+        if (ReadFile("ms0:/" UPDATER, 0, pbp_header, sizeof(pbp_header)) != sizeof(pbp_header) &&
+				ReadFile("ms0:/PSP/GAME/DC10/" UPDATER, 0, pbp_header, sizeof(pbp_header)) != sizeof(pbp_header))
         {
-        	ErrorExit(1000, "Error reading " UPDATER " or " UPDATER_GO " at root.\n");
+        	ErrorExit(1000, "Error reading " UPDATER " or " UPDATER_GO " at root or ms0:/PSP/GAME/DC10/\n");
         }
     }
 
@@ -613,18 +616,20 @@ static void Extract661Modules()
 
     if(go) {
 
-        if (ReadFile("ms0:/" UPDATER_GO, *(u32 *)&pbp_header[0x20], g_dataPSAR, PRX_SIZE_661_GO) != PRX_SIZE_661_GO)
+        if (ReadFile("ms0:/" UPDATER_GO, *(u32 *)&pbp_header[0x20], g_dataPSAR, PRX_SIZE_661_GO) != PRX_SIZE_661_GO &&
+				ReadFile("ms0:/PSP/GAME/DC10/" UPDATER_GO, *(u32 *)&pbp_header[0x20], g_dataPSAR, PRX_SIZE_661_GO) != PRX_SIZE_661_GO)
         {
         	ErrorExit(1000, "Invalid " UPDATER_GO ".\n");
         }
 
     }
     else {
-        if (ReadFile("ms0:/" UPDATER, *(u32 *)&pbp_header[0x20], g_dataPSAR, PRX_SIZE_661) != PRX_SIZE_661)
+        if (ReadFile("ms0:/" UPDATER, *(u32 *)&pbp_header[0x20], g_dataPSAR, PRX_SIZE_661) != PRX_SIZE_661 &&
+				ReadFile("ms0:/PSP/GAME/DC10/" UPDATER, *(u32 *)&pbp_header[0x20], g_dataPSAR, PRX_SIZE_661) != PRX_SIZE_661)
         {
         	ErrorExit(1000, "Invalid " UPDATER ".\n");
         }
-    }
+	} 
 
     if (g_cancel)
         CancelInstall();
@@ -722,13 +727,17 @@ static void Extract661PSAR()
     
     if(go) {
         fd = sceIoOpen("ms0:/" UPDATER_GO, PSP_O_RDONLY, 0);
+		if(fd<0)
+          fd = sceIoOpen("ms0:/PSP/GAME/DC10/" UPDATER_GO, PSP_O_RDONLY, 0);
     }
     else {
         fd = sceIoOpen("ms0:/" UPDATER, PSP_O_RDONLY, 0);
+		if(fd<0)
+          fd = sceIoOpen("ms0:/PSP/GAME/DC10/" UPDATER, PSP_O_RDONLY, 0);
     }
     if (fd < 0)
     {
-        ErrorExit(1000, "Incorrect or inexistant " UPDATER " or " UPDATER_GO " at root.\n");
+        ErrorExit(1000, "Incorrect or inexistant " UPDATER " or " UPDATER_GO " at root or ms0:/PSP/GAME/DC10/\n");
     }
     
     if(go) {
@@ -1185,9 +1194,11 @@ int OnInstallBegin(void *param)
     return VLF_EV_RET_REMOVE_HANDLERS;
 }
 
+
 int app_main()
 {
     int theme;
+
     
     vlfGuiSystemSetup(1, 1, 1);
 
