@@ -18,3 +18,4 @@
 
 - `Version 10.10`: adds support for idstorage emulation on memory stick, installs `ARK-5`, several other fixes and improvements.
 - `Version 10.11`: fixes wlan issues on on later models.
+- `Version 10.12`: fixes unpricker on 05g
