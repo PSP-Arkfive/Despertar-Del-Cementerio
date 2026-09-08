@@ -175,7 +175,7 @@ def run() -> None:
                 resp.close()
             with ZipFile('pspdecrypt-windows.zip', 'r') as zObject:
                 zObject.extractall(path=f'{os.getcwd()}\\')
-                shutil.move('windows/pspdecrypt', './pspdecrypt')
+                shutil.move('windows/pspdecrypt.exe', './pspdecrypt.exe')
             os.system('oschmod 755 pspdecrypt.exe')
             x['state'] = 'normal'
         elif ostype == 'Darwin' and platform.machine() == 'x86_64':
