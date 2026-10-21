@@ -21,6 +21,7 @@
 #include "main.h"
 #include "install.h"
 #include "nandoperations.h"
+#include "vlfwavemod.h"
 
 PSP_MODULE_INFO("VUnbricker", 0x800, 10, 1);
 PSP_MAIN_THREAD_ATTR(0);
@@ -359,6 +360,10 @@ int app_main()
     if (!data || vlfGuiSetBackgroundFileBuffer(data, 6176) < 0)
     {
         vlfGuiSetBackgroundPlane(0xFF000000);
+    }
+    else
+    {
+      updateWaveForBackground(model, rnd);
     }
 
     if (data)

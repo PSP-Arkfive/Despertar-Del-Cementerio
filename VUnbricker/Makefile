@@ -7,6 +7,7 @@ OBJS = crt0.o main.o \
 	src/nandoperations.o \
 	src/flash_format.o \
 	src/idstools.o \
+	src/vlfwavemod.o
 
 INCDIR = include
 CFLAGS = -std=c99 -O2 -G0 -Wall -fshort-wchar -fno-pic -mno-check-zero-division
@@ -15,7 +16,7 @@ ASFLAGS = $(CFLAGS) -c
 
 LIBDIR = $(CFWSDK)/libs
 LDFLAGS = -nostdlib
-LIBS = -lpspuser -lpsprtc -lpspreg -lpspwlan -lpsppower \
+LIBS = -lm -lgcc -lpspuser -lpsprtc -lpspreg -lpspwlan -lpsppower \
 	-lvlfgui -lvlfgu -lvlfutils -lvlflibc \
 	-lpspsystemctrl_user -lpspkubridge \
 	-lpspdcman -lpspdecrypt -lpspiplupdate -lidsregeneration -lpspmodinfo
