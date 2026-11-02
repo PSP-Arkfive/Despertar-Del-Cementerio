@@ -12,6 +12,7 @@
 #include <psppower.h>
 #include <pspreg.h>
 
+#include <systemctrl.h>
 #include <systemctrl_ark.h>
 #include <cfwmacros.h>
 #include <libpsardumper.h>
@@ -274,25 +275,62 @@ int isVitaFile(char* filename){
     );
 }
 
-static const char* flash0_paths[] = {
-    FLASH0_ARK,
-    DEFAULT_ARK_PATH FLASH0_ARK
-};
+static ARKConfig ark_config;
 
-static const char* cipl_paths[] = {
-    CIPL_ARK,
-    "ms0:/PSP/GAME/CustomIPL/" CIPL_ARK
-};
+// Ask ARK where it is really installed (ms0 or ef0, any folder name)
+void getArkConfig(){
+    struct KernelCallArg args;
+    void* getConfig = (void*)sctrlHENFindFunction("SystemControl", "SystemCtrlForKernel", 0xB00B1E55); // this is for ARK-4
+    if (!getConfig) getConfig = (void*)sctrlHENFindFunction("SystemControl", "ArkCtrl", 0xB00B1E55); // and this one is for ARK-5
 
-const char* findPath(const char** paths, int count){
-    for (int i=0; i<count; i++){
-        SceUID fd = sceIoOpen(paths[i], PSP_O_RDONLY, 0777);
-        if (fd >= 0){
-            sceIoClose(fd);
-            return paths[i];
-        }
+    strcpy(ark_config.arkpath, DEFAULT_ARK_PATH); // not running under ARK
+    if (getConfig){
+        args.arg1 = (u32)&ark_config;
+        kuKernelCall(getConfig, &args);
     }
-    ErrorExit(1000, "Unable to open archive %s\n", paths[0]);
+}
+
+int fileExists(const char* path){
+    SceUID fd = sceIoOpen(path, PSP_O_RDONLY, 0777);
+    if (fd < 0) return 0;
+    sceIoClose(fd);
+    return 1;
+}
+
+const char* findArk(const char* name, int scan_games){
+    // scan_games searches PSP/GAME/<dir>/ and PSP/GAME/<dir>/CustomIPL/, covering Game Categories / Lighthouse and renamed parent/sub folders.
+    static const char* game_dirs[] = {"ms0:/PSP/GAME/", "ef0:/PSP/GAME/"};
+    static char path[256];
+
+    if (fileExists(name))
+        return name;
+
+    snprintf(path, sizeof(path), "%s%s", ark_config.arkpath, name);
+    if (fileExists(path))
+        return path;
+
+    for (int i=0; scan_games && i<NELEMS(game_dirs); i++){
+        SceIoDirent dit;
+        int found = 0;
+        SceUID dfd = sceIoDopen(game_dirs[i]);
+        if (dfd < 0) continue;
+        memset(&dit, 0, sizeof(dit));
+        while (!found && sceIoDread(dfd, &dit) > 0){
+            if (FIO_S_ISDIR(dit.d_stat.st_mode) && dit.d_name[0] != '.'){
+                snprintf(path, sizeof(path), "%s%s/%s", game_dirs[i], dit.d_name, name);
+                found = fileExists(path);
+                if (!found){
+                    snprintf(path, sizeof(path), "%s%s/CustomIPL/%s", game_dirs[i], dit.d_name, name);
+                    found = fileExists(path);
+                }
+            }
+        }
+        sceIoDclose(dfd);
+        if (found)
+            return path;
+    }
+
+    ErrorExit(1000, "Unable to find %s\nCopy it to the DC10 folder or %s\n", name, ark_config.arkpath);
     return NULL;
 }
 
@@ -1067,18 +1105,22 @@ int install_thread(SceSize args, void *argp)
     sceKernelDelayThread(250000);
     SetProgress(95, 1);
 
+    getArkConfig();
+
     // Install DC files
     SetStatus("Extracting " DC10_ARK);
-    extractArchive(DC10_ARK, ARK_DC_PATH);
+    extractArchive(findArk(DC10_ARK, 0), ARK_DC_PATH);
 
     // Install ARK files
     SetStatus("Extracting " FLASH0_ARK);
-    extractArchive(findPath(flash0_paths, NELEMS(flash0_paths)), ARK_DC_PATH);
-    CopyFile(DEFAULT_ARK_PATH VSH_MENU, VSH_MENU_DC);
+    extractArchive(findArk(FLASH0_ARK, 0), ARK_DC_PATH);
+    char vsh_menu[256];
+    snprintf(vsh_menu, sizeof(vsh_menu), "%s" VSH_MENU, ark_config.arkpath);
+    CopyFile(vsh_menu, VSH_MENU_DC);
 
     // Install cIPL files
     SetStatus("Extracting " CIPL_ARK);
-    extractArchive(findPath(cipl_paths, NELEMS(cipl_paths)), ARK_DC_PATH);
+    extractArchive(findArk(CIPL_ARK, 1), ARK_DC_PATH);
 
     sceKernelDelayThread(250000);
     SetProgress(98, 1);
