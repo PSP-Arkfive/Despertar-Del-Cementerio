@@ -70,7 +70,7 @@ int module_start(SceSize args, void *argp)
     psp_model = sceKernelGetModel();
     InstallFlashEmu();
     previous = sctrlHENSetStartModuleHandler(OnModuleStart);
-    sctrlHENSetRebootexOverride(rebootbuffer_ms_psp);
+    sctrlHENSetRebootexOverride(rebootbuffer_ms_psp, size_rebootbuffer_ms_psp);
     ClearCaches();
 
     return 0;
