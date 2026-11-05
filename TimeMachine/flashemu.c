@@ -95,6 +95,14 @@ SceIoDeviceEntry *getMSEntry()
 
 static char *tm_path = ARK_DC_PATH;
 
+static void SetupFakeIob(SceIoIob *fake_iob, SceIoIob *iob, SceIoDeviceEntry *de, void *arg)
+{
+    memcpy(fake_iob, iob, sizeof(*fake_iob));
+    fake_iob->fs_num = 0;
+    fake_iob->drv = de;
+    fake_iob->arg = arg;
+}
+
 static void BuildPath(char *buf, const char *file)
 {
     //Copy DC path skipping "ms0:"
@@ -104,7 +112,7 @@ static void BuildPath(char *buf, const char *file)
 
 static int FlashEmu_IoExit(SceIoDeviceEntry* de)
 {
-    sceKernelDeleteHeap((SceUID)de->d_private);
+    sceKernelDeleteHeap((SceUID)de->arg);
 
     return 0;
 }
@@ -133,7 +141,7 @@ static int FlashEmu_IoDevctl(SceIoIob *iob, const char *devname, unsigned int cm
         break;
     case 0x208813:
         res = 0;
-        if(sceKernelGetModel() == 0 || iob->i_unit != 3)
+        if(sceKernelGetModel() == 0 || iob->fs_num != 3)
             res = 0x80010016;
 
     default:
@@ -164,22 +172,14 @@ static int FlashEmu_IoChdir(SceIoIob *iob, const char *dir)
     SceIoDeviceEntry *ms0 = getMSEntry();
     
     SceIoIob fake_iob;
-    fake_iob.i_flgs = iob->i_flgs;
-    fake_iob.i_unit = 0;
-    fake_iob.i_de = ms0;
-    fake_iob.d_type = iob->d_type;
-    fake_iob.i_private = iob->i_private;
-    fake_iob.i_cwd = iob->i_cwd;
-    fake_iob.i_fpos = iob->i_fpos;
-    fake_iob.i_thread = iob->i_thread;
-    fake_iob.dummy = iob->dummy;
+    SetupFakeIob(&fake_iob, iob, ms0, iob->arg);
     
     char ms_path[260];
     BuildPath(ms_path, dir);
     
-    int ret = ms0->d_dp->dt_func->df_chdir(&fake_iob, ms_path);
+    int ret = ms0->drv->funcs->IoChdir(&fake_iob, ms_path);
     
-    iob->i_private = fake_iob.i_private;
+    iob->arg = fake_iob.arg;
 
     return ret;
 }
@@ -189,15 +189,7 @@ static int FlashEmu_IoRename(SceIoIob *iob, const char *oldname, const char *new
     SceIoDeviceEntry *ms0 = getMSEntry();
     
     SceIoIob fake_iob;
-    fake_iob.i_flgs = iob->i_flgs;
-    fake_iob.i_unit = 0;
-    fake_iob.i_de = ms0;
-    fake_iob.d_type = iob->d_type;
-    fake_iob.i_private = iob->i_private;
-    fake_iob.i_cwd = iob->i_cwd;
-    fake_iob.i_fpos = iob->i_fpos;
-    fake_iob.i_thread = iob->i_thread;
-    fake_iob.dummy = iob->dummy;
+    SetupFakeIob(&fake_iob, iob, ms0, iob->arg);
     
     char ms_oldname[260];
     BuildPath(ms_oldname, oldname);
@@ -205,9 +197,9 @@ static int FlashEmu_IoRename(SceIoIob *iob, const char *oldname, const char *new
     char ms_newname[260];
     BuildPath(ms_newname, newname);
     
-    int ret = ms0->d_dp->dt_func->df_rename(&fake_iob, ms_oldname, ms_newname);
+    int ret = ms0->drv->funcs->IoRename(&fake_iob, ms_oldname, ms_newname);
     
-    iob->i_private = fake_iob.i_private;
+    iob->arg = fake_iob.arg;
 
     return ret;
 }
@@ -217,22 +209,14 @@ static int FlashEmu_IoChstat(SceIoIob *iob, const char *file, SceIoStat *stat, i
     SceIoDeviceEntry *ms0 = getMSEntry();
     
     SceIoIob fake_iob;
-    fake_iob.i_flgs = iob->i_flgs;
-    fake_iob.i_unit = 0;
-    fake_iob.i_de = ms0;
-    fake_iob.d_type = iob->d_type;
-    fake_iob.i_private = iob->i_private;
-    fake_iob.i_cwd = iob->i_cwd;
-    fake_iob.i_fpos = iob->i_fpos;
-    fake_iob.i_thread = iob->i_thread;
-    fake_iob.dummy = iob->dummy;
+    SetupFakeIob(&fake_iob, iob, ms0, iob->arg);
     
     char ms_path[260];
     BuildPath(ms_path, file);
     
-    int ret = ms0->d_dp->dt_func->df_chstat(&fake_iob, ms_path, stat, bits);
+    int ret = ms0->drv->funcs->IoChstat(&fake_iob, ms_path, stat, bits);
     
-    iob->i_private = fake_iob.i_private;
+    iob->arg = fake_iob.arg;
 
     return ret;
 }
@@ -242,21 +226,13 @@ static int FlashEmu_IoGetstat(SceIoIob *iob, const char *file, SceIoStat *stat)
     SceIoDeviceEntry *ms0 = getMSEntry();
     
     SceIoIob fake_iob;
-    fake_iob.i_flgs = iob->i_flgs;
-    fake_iob.i_unit = 0;
-    fake_iob.i_de = ms0;
-    fake_iob.d_type = iob->d_type;
-    fake_iob.i_private = iob->i_private;
-    fake_iob.i_cwd = iob->i_cwd;
-    fake_iob.i_fpos = iob->i_fpos;
-    fake_iob.i_thread = iob->i_thread;
-    fake_iob.dummy = iob->dummy;
+    SetupFakeIob(&fake_iob, iob, ms0, iob->arg);
     
     char ms_path[260];
     BuildPath(ms_path, file);
     
-    int ret = ms0->d_dp->dt_func->df_getstat(&fake_iob, ms_path, stat);	
-    iob->i_private = fake_iob.i_private;
+    int ret = ms0->drv->funcs->IoGetstat(&fake_iob, ms_path, stat);	
+    iob->arg = fake_iob.arg;
 
     return ret;
 }
@@ -269,19 +245,11 @@ static int FlashEmu_IoDread(SceIoIob *iob, SceIoDirent *dir)
     SceIoDeviceEntry *ms0 = getMSEntry();
     
     SceIoIob fake_iob;
-    fake_iob.i_flgs = iob->i_flgs;
-    fake_iob.i_unit = 0;
-    fake_iob.i_de = ms0;
-    fake_iob.d_type = iob->d_type;
-    fake_iob.i_private = iob->i_private;
-    fake_iob.i_cwd = iob->i_cwd;
-    fake_iob.i_fpos = iob->i_fpos;
-    fake_iob.i_thread = iob->i_thread;
-    fake_iob.dummy = iob->dummy;
+    SetupFakeIob(&fake_iob, iob, ms0, iob->arg);
 
-    int ret = ms0->d_dp->dt_func->df_dread(&fake_iob, dir);
+    int ret = ms0->drv->funcs->IoDread(&fake_iob, dir);
     
-    iob->i_private = fake_iob.i_private;
+    iob->arg = fake_iob.arg;
 
     return ret;
 }
@@ -291,19 +259,11 @@ static int FlashEmu_IoDclose(SceIoIob *iob)
     SceIoDeviceEntry *ms0 = getMSEntry();
     
     SceIoIob fake_iob;
-    fake_iob.i_flgs = iob->i_flgs;
-    fake_iob.i_unit = 0;
-    fake_iob.i_de = ms0;
-    fake_iob.d_type = iob->d_type;
-    fake_iob.i_private = iob->i_private;
-    fake_iob.i_cwd = iob->i_cwd;
-    fake_iob.i_fpos = iob->i_fpos;
-    fake_iob.i_thread = iob->i_thread;
-    fake_iob.dummy = iob->dummy;
+    SetupFakeIob(&fake_iob, iob, ms0, iob->arg);
     
-    int ret = ms0->d_dp->dt_func->df_dclose(&fake_iob);
+    int ret = ms0->drv->funcs->IoDclose(&fake_iob);
     
-    iob->i_private = fake_iob.i_private;
+    iob->arg = fake_iob.arg;
 
     return ret;
 }
@@ -313,21 +273,13 @@ static int FlashEmu_IoDopen(SceIoIob *iob, const char *dir)
     SceIoDeviceEntry *ms0 = getMSEntry();
     
     SceIoIob fake_iob;
-    fake_iob.i_flgs = iob->i_flgs;
-    fake_iob.i_unit = 0;
-    fake_iob.i_de = ms0;
-    fake_iob.d_type = iob->d_type;
-    fake_iob.i_private = iob->i_private;
-    fake_iob.i_cwd = iob->i_cwd;
-    fake_iob.i_fpos = iob->i_fpos;
-    fake_iob.i_thread = iob->i_thread;
-    fake_iob.dummy = iob->dummy;
+    SetupFakeIob(&fake_iob, iob, ms0, iob->arg);
     
     char ms_path[260];
     BuildPath(ms_path, dir);
     
-    int ret = ms0->d_dp->dt_func->df_dopen(&fake_iob, ms_path);	
-    iob->i_private = fake_iob.i_private;
+    int ret = ms0->drv->funcs->IoDopen(&fake_iob, ms_path);	
+    iob->arg = fake_iob.arg;
 
     return ret;
 }
@@ -337,22 +289,14 @@ static int FlashEmu_IoRmdir(SceIoIob *iob, const char *dir)
     SceIoDeviceEntry *ms0 = getMSEntry();
     
     SceIoIob fake_iob;
-    fake_iob.i_flgs = iob->i_flgs;
-    fake_iob.i_unit = 0;
-    fake_iob.i_de = ms0;
-    fake_iob.d_type = iob->d_type;
-    fake_iob.i_private = iob->i_private;
-    fake_iob.i_cwd = iob->i_cwd;
-    fake_iob.i_fpos = iob->i_fpos;
-    fake_iob.i_thread = iob->i_thread;
-    fake_iob.dummy = iob->dummy;
+    SetupFakeIob(&fake_iob, iob, ms0, iob->arg);
     
     char ms_path[260];
     BuildPath(ms_path, dir);
     
-    int ret = ms0->d_dp->dt_func->df_rmdir(&fake_iob, ms_path);
+    int ret = ms0->drv->funcs->IoRmdir(&fake_iob, ms_path);
     
-    iob->i_private = fake_iob.i_private;
+    iob->arg = fake_iob.arg;
 
     return ret;
 }
@@ -362,22 +306,14 @@ static int FlashEmu_IoMkdir(SceIoIob *iob, const char *name, SceMode mode)
     SceIoDeviceEntry *ms0 = getMSEntry();
     
     SceIoIob fake_iob;
-    fake_iob.i_flgs = iob->i_flgs;
-    fake_iob.i_unit = 0;
-    fake_iob.i_de = ms0;
-    fake_iob.d_type = iob->d_type;
-    fake_iob.i_private = iob->i_private;
-    fake_iob.i_cwd = iob->i_cwd;
-    fake_iob.i_fpos = iob->i_fpos;
-    fake_iob.i_thread = iob->i_thread;
-    fake_iob.dummy = iob->dummy;
+    SetupFakeIob(&fake_iob, iob, ms0, iob->arg);
     
     char ms_path[260];
     BuildPath(ms_path, name);
     
-    int ret = ms0->d_dp->dt_func->df_mkdir(&fake_iob, ms_path, mode);
+    int ret = ms0->drv->funcs->IoMkdir(&fake_iob, ms_path, mode);
     
-    iob->i_private = fake_iob.i_private;
+    iob->arg = fake_iob.arg;
 
     return ret;
 }
@@ -387,29 +323,21 @@ static int FlashEmu_IoRemove(SceIoIob *iob, const char *name)
     SceIoDeviceEntry *ms0 = getMSEntry();
     
     SceIoIob fake_iob;
-    fake_iob.i_flgs = iob->i_flgs;
-    fake_iob.i_unit = 0;
-    fake_iob.i_de = ms0;
-    fake_iob.d_type = iob->d_type;
-    fake_iob.i_private = iob->i_private;
-    fake_iob.i_cwd = iob->i_cwd;
-    fake_iob.i_fpos = iob->i_fpos;
-    fake_iob.i_thread = iob->i_thread;
-    fake_iob.dummy = iob->dummy;
+    SetupFakeIob(&fake_iob, iob, ms0, iob->arg);
     
     char ms_path[260];
     BuildPath(ms_path, name);
     
-    int ret = ms0->d_dp->dt_func->df_remove(&fake_iob, ms_path);
+    int ret = ms0->drv->funcs->IoRemove(&fake_iob, ms_path);
     
-    iob->i_private = fake_iob.i_private;
+    iob->arg = fake_iob.arg;
 
     return ret;
 }
 
 SceOff FlashEmu_IoLseek(SceIoIob *iob, SceOff ofs, int whence)
 {
-   FlashEmuPrivate *fep = iob->i_private;
+   FlashEmuPrivate *fep = iob->arg;
     if (fep->virtual)
     {
         switch(whence)
@@ -424,26 +352,18 @@ SceOff FlashEmu_IoLseek(SceIoIob *iob, SceOff ofs, int whence)
     SceIoDeviceEntry *ms0 = getMSEntry();
     
     SceIoIob fake_iob;
-    fake_iob.i_flgs = iob->i_flgs;
-    fake_iob.i_unit = 0;
-    fake_iob.i_de = ms0;
-    fake_iob.d_type = iob->d_type;
-    fake_iob.i_private = fep->uni.ms_private;
-    fake_iob.i_cwd = iob->i_cwd;
-    fake_iob.i_fpos = iob->i_fpos;
-    fake_iob.i_thread = iob->i_thread;
-    fake_iob.dummy = iob->dummy;
+    SetupFakeIob(&fake_iob, iob, ms0, fep->uni.ms_private);
     
-    int ret = ms0->d_dp->dt_func->df_lseek(&fake_iob, ofs, whence);
+    int ret = ms0->drv->funcs->IoLseek(&fake_iob, ofs, whence);
     
-    fep->uni.ms_private = fake_iob.i_private;
+    fep->uni.ms_private = fake_iob.arg;
 
     return ret;
 }
 
-static SceSSize FlashEmu_IoWrite(SceIoIob *iob, void *data, SceSize len)
+static int FlashEmu_IoWrite(SceIoIob *iob, const char *data, SceSize len)
 {
-    FlashEmuPrivate *fep = iob->i_private;
+    FlashEmuPrivate *fep = iob->arg;
     if (fep->virtual)
     {
         return 0x80010086;
@@ -452,51 +372,35 @@ static SceSSize FlashEmu_IoWrite(SceIoIob *iob, void *data, SceSize len)
     SceIoDeviceEntry *ms0 = getMSEntry();
     
     SceIoIob fake_iob;
-    fake_iob.i_flgs = iob->i_flgs;
-    fake_iob.i_unit = 0;
-    fake_iob.i_de = ms0;
-    fake_iob.d_type = iob->d_type;
-    fake_iob.i_private = fep->uni.ms_private;
-    fake_iob.i_cwd = iob->i_cwd;
-    fake_iob.i_fpos = iob->i_fpos;
-    fake_iob.i_thread = iob->i_thread;
-    fake_iob.dummy = iob->dummy;
+    SetupFakeIob(&fake_iob, iob, ms0, fep->uni.ms_private);
     
     int ret = 0;
     
     if (data && len)
-        ret = ms0->d_dp->dt_func->df_write(&fake_iob, data, len);
+        ret = ms0->drv->funcs->IoWrite(&fake_iob, data, len);
     
-    fep->uni.ms_private = fake_iob.i_private;
+    fep->uni.ms_private = fake_iob.arg;
 
     return ret;
 }
 
-static SceSSize FlashEmu_IoRead(SceIoIob *iob, void *data, SceSize len)
+static int FlashEmu_IoRead(SceIoIob *iob, char *data, SceSize len)
 {
-    FlashEmuPrivate *fep = iob->i_private;
+    FlashEmuPrivate *fep = iob->arg;
     if (fep->virtual)
     {
-        int res = ciso_read(&g_ciso_file, data, len, fep->uni.virtualinfo.offset);
+        int res = ciso_read(&g_ciso_file, (u8 *)data, len, fep->uni.virtualinfo.offset);
         return res;
     }
 
     SceIoDeviceEntry *ms0 = getMSEntry();
     
     SceIoIob fake_iob;
-    fake_iob.i_flgs = iob->i_flgs;
-    fake_iob.i_unit = 0;
-    fake_iob.i_de = ms0;
-    fake_iob.d_type = iob->d_type;
-    fake_iob.i_private = fep->uni.ms_private;
-    fake_iob.i_cwd = iob->i_cwd;
-    fake_iob.i_fpos = iob->i_fpos;
-    fake_iob.i_thread = iob->i_thread;
-    fake_iob.dummy = iob->dummy;
+    SetupFakeIob(&fake_iob, iob, ms0, fep->uni.ms_private);
     
-    int ret = ms0->d_dp->dt_func->df_read(&fake_iob, data, len);
+    int ret = ms0->drv->funcs->IoRead(&fake_iob, data, len);
     
-    fep->uni.ms_private = fake_iob.i_private;
+    fep->uni.ms_private = fake_iob.arg;
 
     return ret;
 }
@@ -505,12 +409,12 @@ static int FlashEmu_IoOpen(SceIoIob *iob, char *file, int flags, SceMode mode)
 {
     if (strcmp("/codepage/cptbl.dat", file) == 0)
     {
-        FlashEmuPrivate *fep = sceKernelAllocHeapMemory((SceUID)iob->i_de->d_private, sizeof(FlashEmuPrivate));		
+        FlashEmuPrivate *fep = sceKernelAllocHeapMemory((SceUID)iob->drv->arg, sizeof(FlashEmuPrivate));		
         fep->virtual = 1;
         fep->uni.virtualinfo.buffer = (u8 *)&cptbl;
         fep->uni.virtualinfo.offset = 0;
         fep->uni.virtualinfo.size = size_cptbl;
-        iob->i_private = fep;
+        iob->arg = fep;
 
         return 0;
     }
@@ -523,61 +427,45 @@ static int FlashEmu_IoOpen(SceIoIob *iob, char *file, int flags, SceMode mode)
     }
 
     SceIoIob fake_iob;
-    fake_iob.i_flgs = iob->i_flgs;
-    fake_iob.i_unit = 0;
-    fake_iob.i_de = ms0;
-    fake_iob.d_type = iob->d_type;
-    fake_iob.i_private = 0;
-    fake_iob.i_cwd = iob->i_cwd;
-    fake_iob.i_fpos = iob->i_fpos;
-    fake_iob.i_thread = iob->i_thread;
-    fake_iob.dummy = iob->dummy;
+    SetupFakeIob(&fake_iob, iob, ms0, 0);
 
     char ms_path[260];
     BuildPath(ms_path, file);
 
-    int ret = ms0->d_dp->dt_func->df_open(&fake_iob, ms_path, flags, mode);
+    int ret = ms0->drv->funcs->IoOpen(&fake_iob, ms_path, flags, mode);
     if (ret < 0)
     {
         return ret;
     }
     
-    FlashEmuPrivate *fep = sceKernelAllocHeapMemory((SceUID)iob->i_de->d_private, sizeof(FlashEmuPrivate));	
+    FlashEmuPrivate *fep = sceKernelAllocHeapMemory((SceUID)iob->drv->arg, sizeof(FlashEmuPrivate));	
     fep->virtual = 0;
-    fep->uni.ms_private = fake_iob.i_private;
+    fep->uni.ms_private = fake_iob.arg;
         
-    iob->i_private = fep;
+    iob->arg = fep;
 
     return ret;
 }
 
 static int FlashEmu_IoClose(SceIoIob *iob)
 {
-    FlashEmuPrivate *fep = iob->i_private;
+    FlashEmuPrivate *fep = iob->arg;
     if (fep->virtual)
     {
-        sceKernelFreeHeapMemory((SceUID)iob->i_de->d_private, fep);
+        sceKernelFreeHeapMemory((SceUID)iob->drv->arg, fep);
         return 0;
     }
 
     SceIoDeviceEntry *ms0 = getMSEntry();
     
     SceIoIob fake_iob;
-    fake_iob.i_flgs = iob->i_flgs;
-    fake_iob.i_unit = 0;
-    fake_iob.i_de = ms0;
-    fake_iob.d_type = iob->d_type;
-    fake_iob.i_private = fep->uni.ms_private;
-    fake_iob.i_cwd = iob->i_cwd;
-    fake_iob.i_fpos = iob->i_fpos;
-    fake_iob.i_thread = iob->i_thread;
-    fake_iob.dummy = iob->dummy;
+    SetupFakeIob(&fake_iob, iob, ms0, fep->uni.ms_private);
     
-    int ret = ms0->d_dp->dt_func->df_close(&fake_iob);
+    int ret = ms0->drv->funcs->IoClose(&fake_iob);
     
-    iob->i_private = 0;
+    iob->arg = 0;
 
-    sceKernelFreeHeapMemory((SceUID)iob->i_de->d_private, fep);
+    sceKernelFreeHeapMemory((SceUID)iob->drv->arg, fep);
 
     return ret;
 }
@@ -629,7 +517,7 @@ static int FlashEmu_IoIoctl(SceIoIob *iob, unsigned int cmd, void *indata, SceSi
 
 static int FlashEmu_IoInit(SceIoDeviceEntry* de)
 {
-    de->d_private = (void *)sceKernelCreateHeap(PSP_MEMORY_PARTITION_KERNEL, 0x4000, 1, "");
+    de->arg = (void *)sceKernelCreateHeap(PSP_MEMORY_PARTITION_KERNEL, 0x4000, 1, "");
 
     return 0;
 }
@@ -720,10 +608,10 @@ static SceIoDeviceFunction flashFatFuncs = {
     FlashEmu_IoExit,
     FlashEmu_IoOpen,
     FlashEmu_IoClose,
-    FlashEmu_IoRead,
-    FlashEmu_IoWrite,
+    (void *)FlashEmu_IoRead,
+    (void *)FlashEmu_IoWrite,
     FlashEmu_IoLseek,
-    FlashEmu_IoIoctl,
+    (void *)FlashEmu_IoIoctl,
     FlashEmu_IoRemove,
     FlashEmu_IoMkdir,
     FlashEmu_IoRmdir,
@@ -736,7 +624,7 @@ static SceIoDeviceFunction flashFatFuncs = {
     FlashEmu_IoChdir,
     FlashEmu_IoMount,
     FlashEmu_IoUmount,
-    FlashEmu_IoDevctl,
+    (void *)FlashEmu_IoDevctl,
     FlashEmu_IoCancel
 };
 
