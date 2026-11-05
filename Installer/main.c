@@ -93,7 +93,7 @@ void ErrorExit(int milisecs, char *fmt, ...)
 ////////////////////////////////////////////////////////////////////
 // File helpers
 
-int ReadFile(char *file, int seek, void *buf, int size);
+int ReadFile(const char *file, int seek, void *buf, int size);
 int WriteFile(char *file, void *buf, int size);
 void *malloc64(int size);
 
@@ -286,9 +286,21 @@ static const char* cipl_paths[] = {
     "ef0:/PSP/GAME/CustomIPL/" CIPL_ARK
 };
 
+static const char* pbp_paths[] = {
+    "ms0:/" UPDATER,
+    "ms0:/PSP/GAME/DC10/" UPDATER,
+};
+
+static const char* pbp_paths_go[] = {
+    "ms0:/" UPDATER_GO,
+    "ef0:/" UPDATER_GO,
+    "ms0:/PSP/GAME/DC10/" UPDATER_GO,
+    "ef0:/PSP/GAME/DC10/" UPDATER_GO,
+};
+
 const char* findPath(const char** paths, int count){
     for (int i=0; i<count; i++){
-        SceIOStat stat;
+        SceIoStat stat;
         int found = sceIoGetstat(paths[i], &stat);
         if (found >= 0){
             return paths[i];
@@ -587,25 +599,27 @@ static void Extract661Modules()
     u8 pbp_header[0x28];
     u8 *mod_buf;
 
-    SetStatus("Extracting " UPDATER_VER_STR " updater modules...");
-        
-    if (ReadFile("ms0:/" UPDATER_GO, 0, pbp_header, sizeof(pbp_header)) != sizeof(pbp_header) && 
-			ReadFile("ms0:/PSP/GAME/DC10/" UPDATER_GO, 0, pbp_header, sizeof(pbp_header)) != sizeof(pbp_header)) {
-        if (ReadFile("ms0:/" UPDATER, 0, pbp_header, sizeof(pbp_header)) != sizeof(pbp_header) &&
-				ReadFile("ms0:/PSP/GAME/DC10/" UPDATER, 0, pbp_header, sizeof(pbp_header)) != sizeof(pbp_header))
-        {
-        	ErrorExit(1000, "Error reading " UPDATER " or " UPDATER_GO " at root or ms0:/PSP/GAME/DC10/\n");
-        }
+    const char* pbp_path = NULL;
+    if (go) {
+        pbp_path = findPath(pbp_paths_go, NELEMS(pbp_paths_go));
+    } else {
+        pbp_path = findPath(pbp_paths, NELEMS(pbp_paths));
     }
 
-    if (ReadFile("ms0:/" UPDATER_GO, 0, pbp_header, sizeof(pbp_header)) == sizeof(pbp_header)) {
-        go = 1;
+    SetStatus("Extracting " UPDATER_VER_STR " updater modules...");
+
+    if (ReadFile(pbp_path, 0, pbp_header, sizeof(pbp_header)) != sizeof(pbp_header))
+    {
+        ErrorExit(1000, "Error reading " UPDATER_VER_STR " updater header.\n");
+    }
+
+    if (go) {
         vlfGuiRemoveProgressBar(progress_bar);
         vlfGuiRemoveText(progress_text);
         SetStatus("GO Firmware Found. If you do not want\nto create DCARK for the GO\ndelete/rename 661GO.PBP first!");
         sceKernelDelayThread(5000000);
         SetStatus("Please wait...");
-        progress_bar = vlfGuiAddProgressBar(136);	
+        progress_bar = vlfGuiAddProgressBar(136);
         progress_text = vlfGuiAddText(240, 148, "0%");
         vlfGuiSetTextAlignment(progress_text, VLF_ALIGNMENT_CENTER);
 
@@ -616,18 +630,19 @@ static void Extract661Modules()
         CancelInstall();
     }
 
+    u32 psar_offset;
+    memcpy(&psar_offset, pbp_header + 0x20, sizeof(psar_offset));
+
     if(go) {
 
-        if (ReadFile("ms0:/" UPDATER_GO, *(u32 *)&pbp_header[0x20], g_dataPSAR, PRX_SIZE_661_GO) != PRX_SIZE_661_GO &&
-				ReadFile("ms0:/PSP/GAME/DC10/" UPDATER_GO, *(u32 *)&pbp_header[0x20], g_dataPSAR, PRX_SIZE_661_GO) != PRX_SIZE_661_GO)
+        if (ReadFile(pbp_path, psar_offset, g_dataPSAR, PRX_SIZE_661_GO) != PRX_SIZE_661_GO)
         {
         	ErrorExit(1000, "Invalid " UPDATER_GO ".\n");
         }
 
     }
     else {
-        if (ReadFile("ms0:/" UPDATER, *(u32 *)&pbp_header[0x20], g_dataPSAR, PRX_SIZE_661) != PRX_SIZE_661 &&
-				ReadFile("ms0:/PSP/GAME/DC10/" UPDATER, *(u32 *)&pbp_header[0x20], g_dataPSAR, PRX_SIZE_661) != PRX_SIZE_661)
+        if (ReadFile(pbp_path, psar_offset, g_dataPSAR, PRX_SIZE_661) != PRX_SIZE_661)
         {
         	ErrorExit(1000, "Invalid " UPDATER ".\n");
         }
@@ -727,16 +742,15 @@ static void Extract661PSAR()
     
     SetStatus("Extracting " UPDATER_VER_STR " modules... ");
     
-    if(go) {
-        fd = sceIoOpen("ms0:/" UPDATER_GO, PSP_O_RDONLY, 0);
-		if(fd<0)
-          fd = sceIoOpen("ms0:/PSP/GAME/DC10/" UPDATER_GO, PSP_O_RDONLY, 0);
+    const char* pbp_path = NULL;
+    if (go) {
+        pbp_path = findPath(pbp_paths_go, NELEMS(pbp_paths_go));
+    } else {
+        pbp_path = findPath(pbp_paths, NELEMS(pbp_paths));
     }
-    else {
-        fd = sceIoOpen("ms0:/" UPDATER, PSP_O_RDONLY, 0);
-		if(fd<0)
-          fd = sceIoOpen("ms0:/PSP/GAME/DC10/" UPDATER, PSP_O_RDONLY, 0);
-    }
+
+    fd = sceIoOpen(pbp_path, PSP_O_RDONLY, 0);
+
     if (fd < 0)
     {
         ErrorExit(1000, "Incorrect or inexistant " UPDATER " or " UPDATER_GO " at root or ms0:/PSP/GAME/DC10/\n");
@@ -1201,7 +1215,12 @@ int app_main()
 {
     int theme;
 
-    
+    SceUID ef0;
+    if ((ef0=sceIoDopen("ef0:/")) >= 0){
+        go = 1;
+        sceIoDclose(ef0);
+    }
+
     vlfGuiSystemSetup(1, 1, 1);
 
     if (sceKernelDevkitVersion() < 0x02070110)

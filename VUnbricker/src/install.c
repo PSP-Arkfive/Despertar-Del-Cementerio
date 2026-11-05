@@ -509,7 +509,6 @@ const char *f0_05g[] =
     "kd/wlanfirm_05g.prx",
     "vsh/etc/index_05g.dat",
     "vsh/module/bluetooth_plugin.prx",
-    "vsh/module/netconf_plugin.prx",
     "vsh/module/netconf_bt_plugin.prx",
     "vsh/module/oneseg_core.prx",
     "vsh/module/oneseg_hal_toolbox.prx",

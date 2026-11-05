@@ -32,3 +32,6 @@ EFAWARE=1
 all: $(TARGET).prx
 
 include $(PSPSDK)/lib/build.mak
+
+PARAM.SFO:
+	cp PARAM_fixed.SFO PARAM.SFO
