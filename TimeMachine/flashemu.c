@@ -95,7 +95,7 @@ SceIoDeviceEntry *getMSEntry()
 
 static char *tm_path = ARK_DC_PATH;
 
-static void SetupFakeIob(SceIoIobFE *fake_iob, SceIoIobFE *iob, SceIoDeviceEntry *de, void *arg)
+static void SetupFakeIob(FakeIob *fake_iob, SceIoIob *iob, SceIoDeviceEntry *de, void *arg)
 {
     memcpy(fake_iob, iob, sizeof(*fake_iob));
     fake_iob->i_unit = 0;
@@ -117,17 +117,17 @@ static int FlashEmu_IoExit(SceIoDeviceEntry* de)
     return 0;
 }
 
-static int FlashEmu_IoMount(SceIoIobFE *iob)
+static int FlashEmu_IoMount(SceIoIob *iob)
 {
     return 0;
 }
 
-static int FlashEmu_IoUmount(SceIoIobFE *iob)
+static int FlashEmu_IoUmount(SceIoIob *iob)
 {
     return 0;
 }
 
-static int FlashEmu_IoDevctl(SceIoIobFE *iob, const char *devname, unsigned int cmd, void *indata, SceSize inlen, void *outdata, SceSize outlen)
+static int FlashEmu_IoDevctl(SceIoIob *iob, const char *devname, unsigned int cmd, void *indata, SceSize inlen, void *outdata, SceSize outlen)
 {
     int res = 0;
 
@@ -141,7 +141,7 @@ static int FlashEmu_IoDevctl(SceIoIobFE *iob, const char *devname, unsigned int 
         break;
     case 0x208813:
         res = 0;
-        if(sceKernelGetModel() == 0 || iob->i_unit != 3)
+        if(sceKernelGetModel() == 0 || iob->fs_num != 3)
             res = 0x80010016;
         break;
 
@@ -153,7 +153,7 @@ static int FlashEmu_IoDevctl(SceIoIobFE *iob, const char *devname, unsigned int 
     return res;
 }
 
-static int FlashEmu_IoCancel(SceIoIobFE *iob)
+static int FlashEmu_IoCancel(SceIoIob *iob)
 {
     return SCE_ERROR_ERRNO_NOT_SUPPORTED;
 }
@@ -168,29 +168,29 @@ static int DummyReturnNotSupported()
     return SCE_ERROR_ERRNO_NOT_SUPPORTED;
 }
 
-static int FlashEmu_IoChdir(SceIoIobFE *iob, const char *dir)
+static int FlashEmu_IoChdir(SceIoIob *iob, const char *dir)
 {
     SceIoDeviceEntry *ms0 = getMSEntry();
     
-    SceIoIobFE fake_iob;
-    SetupFakeIob(&fake_iob, iob, ms0, iob->i_private);
+    FakeIob fake_iob;
+    SetupFakeIob(&fake_iob, iob, ms0, iob->arg);
     
     char ms_path[260];
     BuildPath(ms_path, dir);
     
     int ret = ms0->drv->funcs->IoChdir((void *)&fake_iob, ms_path);
     
-    iob->i_private = fake_iob.i_private;
+    iob->arg = fake_iob.i_private;
 
     return ret;
 }
 
-static int FlashEmu_IoRename(SceIoIobFE *iob, const char *oldname, const char *newname)
+static int FlashEmu_IoRename(SceIoIob *iob, const char *oldname, const char *newname)
 {
     SceIoDeviceEntry *ms0 = getMSEntry();
     
-    SceIoIobFE fake_iob;
-    SetupFakeIob(&fake_iob, iob, ms0, iob->i_private);
+    FakeIob fake_iob;
+    SetupFakeIob(&fake_iob, iob, ms0, iob->arg);
     
     char ms_oldname[260];
     BuildPath(ms_oldname, oldname);
@@ -200,145 +200,145 @@ static int FlashEmu_IoRename(SceIoIobFE *iob, const char *oldname, const char *n
     
     int ret = ms0->drv->funcs->IoRename((void *)&fake_iob, ms_oldname, ms_newname);
     
-    iob->i_private = fake_iob.i_private;
+    iob->arg = fake_iob.i_private;
 
     return ret;
 }
 
-static int FlashEmu_IoChstat(SceIoIobFE *iob, const char *file, SceIoStat *stat, int bits)
+static int FlashEmu_IoChstat(SceIoIob *iob, const char *file, SceIoStat *stat, int bits)
 {
     SceIoDeviceEntry *ms0 = getMSEntry();
     
-    SceIoIobFE fake_iob;
-    SetupFakeIob(&fake_iob, iob, ms0, iob->i_private);
+    FakeIob fake_iob;
+    SetupFakeIob(&fake_iob, iob, ms0, iob->arg);
     
     char ms_path[260];
     BuildPath(ms_path, file);
     
     int ret = ms0->drv->funcs->IoChstat((void *)&fake_iob, ms_path, stat, bits);
     
-    iob->i_private = fake_iob.i_private;
+    iob->arg = fake_iob.i_private;
 
     return ret;
 }
 
-static int FlashEmu_IoGetstat(SceIoIobFE *iob, const char *file, SceIoStat *stat)
+static int FlashEmu_IoGetstat(SceIoIob *iob, const char *file, SceIoStat *stat)
 {
     SceIoDeviceEntry *ms0 = getMSEntry();
     
-    SceIoIobFE fake_iob;
-    SetupFakeIob(&fake_iob, iob, ms0, iob->i_private);
+    FakeIob fake_iob;
+    SetupFakeIob(&fake_iob, iob, ms0, iob->arg);
     
     char ms_path[260];
     BuildPath(ms_path, file);
     
     int ret = ms0->drv->funcs->IoGetstat((void *)&fake_iob, ms_path, stat);	
-    iob->i_private = fake_iob.i_private;
+    iob->arg = fake_iob.i_private;
 
     return ret;
 }
 
-static int FlashEmu_IoDread(SceIoIobFE *iob, SceIoDirent *dir)
+static int FlashEmu_IoDread(SceIoIob *iob, SceIoDirent *dir)
 {
     if ((int)dir->d_private == 0xffffffff)
         dir->d_private = 0;
 
     SceIoDeviceEntry *ms0 = getMSEntry();
     
-    SceIoIobFE fake_iob;
-    SetupFakeIob(&fake_iob, iob, ms0, iob->i_private);
+    FakeIob fake_iob;
+    SetupFakeIob(&fake_iob, iob, ms0, iob->arg);
 
     int ret = ms0->drv->funcs->IoDread((void *)&fake_iob, dir);
     
-    iob->i_private = fake_iob.i_private;
+    iob->arg = fake_iob.i_private;
 
     return ret;
 }
 
-static int FlashEmu_IoDclose(SceIoIobFE *iob)
+static int FlashEmu_IoDclose(SceIoIob *iob)
 {
     SceIoDeviceEntry *ms0 = getMSEntry();
     
-    SceIoIobFE fake_iob;
-    SetupFakeIob(&fake_iob, iob, ms0, iob->i_private);
+    FakeIob fake_iob;
+    SetupFakeIob(&fake_iob, iob, ms0, iob->arg);
     
     int ret = ms0->drv->funcs->IoDclose((void *)&fake_iob);
     
-    iob->i_private = fake_iob.i_private;
+    iob->arg = fake_iob.i_private;
 
     return ret;
 }
 
-static int FlashEmu_IoDopen(SceIoIobFE *iob, const char *dir)
+static int FlashEmu_IoDopen(SceIoIob *iob, const char *dir)
 {
     SceIoDeviceEntry *ms0 = getMSEntry();
     
-    SceIoIobFE fake_iob;
-    SetupFakeIob(&fake_iob, iob, ms0, iob->i_private);
+    FakeIob fake_iob;
+    SetupFakeIob(&fake_iob, iob, ms0, iob->arg);
     
     char ms_path[260];
     BuildPath(ms_path, dir);
     
     int ret = ms0->drv->funcs->IoDopen((void *)&fake_iob, ms_path);	
-    iob->i_private = fake_iob.i_private;
+    iob->arg = fake_iob.i_private;
 
     return ret;
 }
 
-static int FlashEmu_IoRmdir(SceIoIobFE *iob, const char *dir)
+static int FlashEmu_IoRmdir(SceIoIob *iob, const char *dir)
 {
     SceIoDeviceEntry *ms0 = getMSEntry();
     
-    SceIoIobFE fake_iob;
-    SetupFakeIob(&fake_iob, iob, ms0, iob->i_private);
+    FakeIob fake_iob;
+    SetupFakeIob(&fake_iob, iob, ms0, iob->arg);
     
     char ms_path[260];
     BuildPath(ms_path, dir);
     
     int ret = ms0->drv->funcs->IoRmdir((void *)&fake_iob, ms_path);
     
-    iob->i_private = fake_iob.i_private;
+    iob->arg = fake_iob.i_private;
 
     return ret;
 }
 
-static int FlashEmu_IoMkdir(SceIoIobFE *iob, const char *name, SceMode mode)
+static int FlashEmu_IoMkdir(SceIoIob *iob, const char *name, SceMode mode)
 {
     SceIoDeviceEntry *ms0 = getMSEntry();
     
-    SceIoIobFE fake_iob;
-    SetupFakeIob(&fake_iob, iob, ms0, iob->i_private);
+    FakeIob fake_iob;
+    SetupFakeIob(&fake_iob, iob, ms0, iob->arg);
     
     char ms_path[260];
     BuildPath(ms_path, name);
     
     int ret = ms0->drv->funcs->IoMkdir((void *)&fake_iob, ms_path, mode);
     
-    iob->i_private = fake_iob.i_private;
+    iob->arg = fake_iob.i_private;
 
     return ret;
 }
 
-static int FlashEmu_IoRemove(SceIoIobFE *iob, const char *name)
+static int FlashEmu_IoRemove(SceIoIob *iob, const char *name)
 {
     SceIoDeviceEntry *ms0 = getMSEntry();
     
-    SceIoIobFE fake_iob;
-    SetupFakeIob(&fake_iob, iob, ms0, iob->i_private);
+    FakeIob fake_iob;
+    SetupFakeIob(&fake_iob, iob, ms0, iob->arg);
     
     char ms_path[260];
     BuildPath(ms_path, name);
     
     int ret = ms0->drv->funcs->IoRemove((void *)&fake_iob, ms_path);
     
-    iob->i_private = fake_iob.i_private;
+    iob->arg = fake_iob.i_private;
 
     return ret;
 }
 
-SceOff FlashEmu_IoLseek(SceIoIobFE *iob, SceOff ofs, int whence)
+SceOff FlashEmu_IoLseek(SceIoIob *iob, SceOff ofs, int whence)
 {
-   FlashEmuPrivate *fep = iob->i_private;
+   FlashEmuPrivate *fep = iob->arg;
     if (fep->virtual)
     {
         switch(whence)
@@ -352,7 +352,7 @@ SceOff FlashEmu_IoLseek(SceIoIobFE *iob, SceOff ofs, int whence)
 
     SceIoDeviceEntry *ms0 = getMSEntry();
     
-    SceIoIobFE fake_iob;
+    FakeIob fake_iob;
     SetupFakeIob(&fake_iob, iob, ms0, fep->uni.ms_private);
     
     int ret = ms0->drv->funcs->IoLseek((void *)&fake_iob, ofs, whence);
@@ -362,9 +362,9 @@ SceOff FlashEmu_IoLseek(SceIoIobFE *iob, SceOff ofs, int whence)
     return ret;
 }
 
-static SceSSize FlashEmu_IoWrite(SceIoIobFE *iob, void *data, SceSize len)
+static SceSSize FlashEmu_IoWrite(SceIoIob *iob, void *data, SceSize len)
 {
-    FlashEmuPrivate *fep = iob->i_private;
+    FlashEmuPrivate *fep = iob->arg;
     if (fep->virtual)
     {
         return 0x80010086;
@@ -372,7 +372,7 @@ static SceSSize FlashEmu_IoWrite(SceIoIobFE *iob, void *data, SceSize len)
 
     SceIoDeviceEntry *ms0 = getMSEntry();
     
-    SceIoIobFE fake_iob;
+    FakeIob fake_iob;
     SetupFakeIob(&fake_iob, iob, ms0, fep->uni.ms_private);
     
     int ret = 0;
@@ -385,9 +385,9 @@ static SceSSize FlashEmu_IoWrite(SceIoIobFE *iob, void *data, SceSize len)
     return ret;
 }
 
-static SceSSize FlashEmu_IoRead(SceIoIobFE *iob, void *data, SceSize len)
+static SceSSize FlashEmu_IoRead(SceIoIob *iob, void *data, SceSize len)
 {
-    FlashEmuPrivate *fep = iob->i_private;
+    FlashEmuPrivate *fep = iob->arg;
     if (fep->virtual)
     {
         int res = ciso_read(&g_ciso_file, data, len, fep->uni.virtualinfo.offset);
@@ -396,7 +396,7 @@ static SceSSize FlashEmu_IoRead(SceIoIobFE *iob, void *data, SceSize len)
 
     SceIoDeviceEntry *ms0 = getMSEntry();
     
-    SceIoIobFE fake_iob;
+    FakeIob fake_iob;
     SetupFakeIob(&fake_iob, iob, ms0, fep->uni.ms_private);
     
     int ret = ms0->drv->funcs->IoRead((void *)&fake_iob, data, len);
@@ -406,16 +406,16 @@ static SceSSize FlashEmu_IoRead(SceIoIobFE *iob, void *data, SceSize len)
     return ret;
 }
 
-static int FlashEmu_IoOpen(SceIoIobFE *iob, char *file, int flags, SceMode mode)
+static int FlashEmu_IoOpen(SceIoIob *iob, char *file, int flags, SceMode mode)
 {
     if (strcmp("/codepage/cptbl.dat", file) == 0)
     {
-        FlashEmuPrivate *fep = sceKernelAllocHeapMemory((SceUID)iob->i_de->arg, sizeof(FlashEmuPrivate));		
+        FlashEmuPrivate *fep = sceKernelAllocHeapMemory((SceUID)iob->drv->arg, sizeof(FlashEmuPrivate));		
         fep->virtual = 1;
         fep->uni.virtualinfo.buffer = (u8 *)&cptbl;
         fep->uni.virtualinfo.offset = 0;
         fep->uni.virtualinfo.size = size_cptbl;
-        iob->i_private = fep;
+        iob->arg = fep;
 
         return 0;
     }
@@ -427,7 +427,7 @@ static int FlashEmu_IoOpen(SceIoIobFE *iob, char *file, int flags, SceMode mode)
         return -1;
     }
 
-    SceIoIobFE fake_iob;
+    FakeIob fake_iob;
     SetupFakeIob(&fake_iob, iob, ms0, 0);
 
     char ms_path[260];
@@ -439,39 +439,39 @@ static int FlashEmu_IoOpen(SceIoIobFE *iob, char *file, int flags, SceMode mode)
         return ret;
     }
     
-    FlashEmuPrivate *fep = sceKernelAllocHeapMemory((SceUID)iob->i_de->arg, sizeof(FlashEmuPrivate));	
+    FlashEmuPrivate *fep = sceKernelAllocHeapMemory((SceUID)iob->drv->arg, sizeof(FlashEmuPrivate));	
     fep->virtual = 0;
     fep->uni.ms_private = fake_iob.i_private;
         
-    iob->i_private = fep;
+    iob->arg = fep;
 
     return ret;
 }
 
-static int FlashEmu_IoClose(SceIoIobFE *iob)
+static int FlashEmu_IoClose(SceIoIob *iob)
 {
-    FlashEmuPrivate *fep = iob->i_private;
+    FlashEmuPrivate *fep = iob->arg;
     if (fep->virtual)
     {
-        sceKernelFreeHeapMemory((SceUID)iob->i_de->arg, fep);
+        sceKernelFreeHeapMemory((SceUID)iob->drv->arg, fep);
         return 0;
     }
 
     SceIoDeviceEntry *ms0 = getMSEntry();
     
-    SceIoIobFE fake_iob;
+    FakeIob fake_iob;
     SetupFakeIob(&fake_iob, iob, ms0, fep->uni.ms_private);
     
     int ret = ms0->drv->funcs->IoClose((void *)&fake_iob);
     
-    iob->i_private = 0;
+    iob->arg = 0;
 
-    sceKernelFreeHeapMemory((SceUID)iob->i_de->arg, fep);
+    sceKernelFreeHeapMemory((SceUID)iob->drv->arg, fep);
 
     return ret;
 }
 
-static int FlashEmu_IoIoctl(SceIoIobFE *iob, unsigned int cmd, void *indata, SceSize inlen, void *outdata, SceSize outlen)
+static int FlashEmu_IoIoctl(SceIoIob *iob, unsigned int cmd, void *indata, SceSize inlen, void *outdata, SceSize outlen)
 {
     int res;
 

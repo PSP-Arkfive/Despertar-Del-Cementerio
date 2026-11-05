@@ -4,7 +4,7 @@
 #include <pspiofilemgr_kernel.h>
 
 /** Structure passed to the file functions of the io driver system */
-typedef struct SceIoIobFE
+typedef struct FakeIob
 {
     int i_flgs;
     int i_unit;
@@ -15,7 +15,7 @@ typedef struct SceIoIobFE
     SceOff i_fpos;
     SceUID i_thread;
     int dummy;
-} SceIoIobFE;
+} FakeIob;
 
 int InstallFlashEmu();
 int UninstallFlashEmu();
