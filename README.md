@@ -1,6 +1,11 @@
 # Despertar Del Cementerio
 Latest version of the legendary unbricking tool for the Sony PSP.
 
+## Building
+
+Run `make` to build the app. The build downloads the latest ARK-5, CustomIPL,
+and PSP dynamic library releases into `tmp/`; `make clean` removes these
+downloaded files.
 
 ## Installation
 
