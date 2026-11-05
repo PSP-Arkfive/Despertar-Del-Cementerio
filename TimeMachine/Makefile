@@ -15,7 +15,7 @@ tmctrl.h: $(TARGET).prx
 
 cptbl.h:
 	dd if=../Resources/cptbl.dat of=cptbl.dat bs=2048 conv=sync
-	$(PY) $(CFWSDK)/build-tools/ciso/ciso.py -c 1 cptbl.dat cptbl.cso
+	$(PY) $(CFWSDK)/build-tools/ciso/ciso.py -c 9 cptbl.dat cptbl.cso
 	bin2c cptbl.cso cptbl.h cptbl
 	rm cptbl.dat cptbl.cso
 
