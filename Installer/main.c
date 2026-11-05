@@ -276,19 +276,21 @@ int isVitaFile(char* filename){
 
 static const char* flash0_paths[] = {
     FLASH0_ARK,
-    DEFAULT_ARK_PATH FLASH0_ARK
+    DEFAULT_ARK_PATH FLASH0_ARK,
+    DEFAULT_ARK_PATH_GO FLASH0_ARK,
 };
 
 static const char* cipl_paths[] = {
     CIPL_ARK,
-    "ms0:/PSP/GAME/CustomIPL/" CIPL_ARK
+    "ms0:/PSP/GAME/CustomIPL/" CIPL_ARK,
+    "ef0:/PSP/GAME/CustomIPL/" CIPL_ARK
 };
 
 const char* findPath(const char** paths, int count){
     for (int i=0; i<count; i++){
-        SceUID fd = sceIoOpen(paths[i], PSP_O_RDONLY, 0777);
-        if (fd >= 0){
-            sceIoClose(fd);
+        SceIOStat stat;
+        int found = sceIoGetstat(paths[i], &stat);
+        if (found >= 0){
             return paths[i];
         }
     }

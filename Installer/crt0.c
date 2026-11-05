@@ -52,6 +52,7 @@ int start_thread(SceSize args, void *argp)
     // load intraFont-vlf
     mod = kuKernelLoadModule("intraFont-vlf.prx", 0, NULL);
     if (mod < 0) mod = kuKernelLoadModule("ms0:/PSP/LIBS/intraFont-vlf.prx", 0, NULL); // retry LIBS folder
+    if (mod < 0) mod = kuKernelLoadModule("ef0:/PSP/LIBS/intraFont-vlf.prx", 0, NULL); // retry LIBS folder ef0
     if (mod < 0) SimpleErrorExit(5000, "Filed to load module intraFont-vlf.prx", mod);
 
     // start intraFont-vlf
@@ -61,6 +62,7 @@ int start_thread(SceSize args, void *argp)
     // load vlf
     mod = kuKernelLoadModule("vlf.prx", 0, NULL);
     if (mod < 0) mod = kuKernelLoadModule("ms0:/PSP/LIBS/vlf.prx", 0, NULL); // retry LIBS folder
+    if (mod < 0) mod = kuKernelLoadModule("ef0:/PSP/LIBS/vlf.prx", 0, NULL); // retry LIBS folder ef0
     if (mod < 0) SimpleErrorExit(5000, "Filed to load module vlf.prx", mod);
 
     // start vlf
