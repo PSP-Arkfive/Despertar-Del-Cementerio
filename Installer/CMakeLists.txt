@@ -44,6 +44,7 @@ create_pbp_file(
    ICON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/res/cementerio.png
    BACKGROUND_PATH ${CMAKE_CURRENT_SOURCE_DIR}/res/despertar.png
    BUILD_PRX
+   PSP_EF_AWARE
 )
 
 get_target_property(BTCNF_FILES build_btcnfs BTCNF_FILES)

@@ -27,11 +27,8 @@ PSP_EBOOT_ICON1 = res/icon1.pmf
 PSP_EBOOT_SND0 = res/snd0.at3
 PSP_EBOOT_PIC0 = res/despertar.png
 BUILD_PRX = 1
-EFAWARE=1
+PSP_EF_AWARE=1
 
 all: $(TARGET).prx
 
 include $(PSPSDK)/lib/build.mak
-
-PARAM.SFO:
-	cp PARAM_fixed.SFO PARAM.SFO
