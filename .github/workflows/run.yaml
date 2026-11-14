@@ -22,8 +22,6 @@ jobs:
       - name: Bootstrap sdk and build
         working-directory: pspsdk
         run: |
-          # Temp fix until merged into sdk
-          sed -i 's/-DF_$\*/-D$\*/g' src/lflash_fatfmt/Makefile.am
           ./build-and-install.sh
 
       - name: ya2d via psp-pacman
