@@ -6,6 +6,7 @@ TARGET = arkdcinstaller
 OBJS = \
 	crt0.o \
 	main.o \
+	tm_package.o \
 
 
 CFLAGS = -std=c99 -O0 -G0 -g -Wall -fshort-wchar -fno-pic -mno-check-zero-division 

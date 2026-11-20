@@ -3,6 +3,7 @@ add_executable(arkdcinstaller)
 target_sources(arkdcinstaller PRIVATE
    crt0.c   
    main.c
+   tm_package.c
    pspbtcnf_dc.h
    pspbtcnf_02g_dc.h
    pspbtcnf_03g_dc.h

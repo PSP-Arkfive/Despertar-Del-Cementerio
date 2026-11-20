@@ -21,6 +21,8 @@
 
 * `./main.py`
 
+* Keep the included `TM.PKG` next to `main.py` for full installations.
+
 * choose your drive wisely....
 
 

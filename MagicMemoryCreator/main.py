@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import tkinter as tk
 from tkinter.filedialog import askopenfilename
+from tkinter import messagebox
 import ctypes
 import glob
 import os
@@ -11,6 +12,7 @@ import subprocess
 import sys
 import time
 import msipl_installer
+from tm_package import extract_tm_package
 import urllib3; urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from zipfile import ZipFile
 from pathlib import Path
@@ -146,6 +148,13 @@ def toggle_run(toggle) -> None:
         b['state'] = 'disabled'
 
 def run() -> None:
+    if not ipl_only.get():
+        try:
+            extract_tm_package("TM.PKG")
+        except (OSError, ValueError) as error:
+            messagebox.showerror("Time Machine package error", str(error))
+            return
+
     b['state'] = 'disabled'
     x['state'] = 'disabled'
     b['text'] = 'Please Wait...'

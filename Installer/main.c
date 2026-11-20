@@ -19,6 +19,8 @@
 #include <kubridge.h>
 #include <vlf.h>
 
+#include "tm_package.h"
+
 PSP_MODULE_INFO("VResurrection_Manager", 0x800, 2, 0);
 PSP_HEAP_SIZE_KB(1024);
 PSP_MAIN_THREAD_ATTR(0);
@@ -284,6 +286,11 @@ static const char* cipl_paths[] = {
     CIPL_ARK,
     "ms0:/PSP/GAME/CustomIPL/" CIPL_ARK,
     "ef0:/PSP/GAME/CustomIPL/" CIPL_ARK
+};
+
+static const char* tm_paths[] = {
+    "TM.PKG",
+    "ms0:/PSP/GAME/TimeMachine/TM.PKG"
 };
 
 static const char* pbp_paths[] = {
@@ -1034,6 +1041,9 @@ int install_thread(SceSize args, void *argp)
     int i;
 
     sceIoChdir(boot_path);
+    const char *tm_package = findPath(tm_paths, NELEMS(tm_paths));
+    if (ExtractTimeMachineFiles(tm_package, 0) < 0)
+        ErrorExit(1000, "Invalid TM.PKG or missing DC modules.\n");
     
     vlfGuiRemoveText(begin_install_text);
     install_status = vlfGuiAddText(80, 100, "Creating directories...");
@@ -1101,6 +1111,8 @@ int install_thread(SceSize args, void *argp)
 
     SetStatus("Writing Time Machine files...");
 
+    if (ExtractTimeMachineFiles(tm_package, 1) < 0)
+        ErrorExit(1000, "Error extracting Time Machine files from TM.PKG.\n");
     WriteTimeMachineFiles();
 
     SetStatus("Writing DC files...");

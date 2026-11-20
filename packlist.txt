@@ -1,4 +1,3 @@
-/tmctrl.prx,TimeMachine/tmctrl.prx
 /kd/dcman.prx,DCManager/dcman.prx
 /vsh/module/resurrection.prx,VUnbricker/resurrection.prx
 /kd/pspbtcnf_dc.bin,btcnf/pspbtcnf_dc.bin

@@ -12,20 +12,24 @@ CUSTOMIPL_ARCHIVE = $(RESOURCE_DIR)/CustomIPL.zip
 CUSTOMIPL_URL = https://github.com/PSP-Arkfive/CustomIPL/releases/download/latest/CustomIPL.zip
 LIBS_ARCHIVE = $(RESOURCE_DIR)/LIBS.zip
 LIBS_URL = https://github.com/pspdev/psp-dynamic-libraries/releases/download/latest/LIBS.zip
+TIMEMACHINE_ARCHIVE = $(RESOURCE_DIR)/TimeMachine.zip
+TIMEMACHINE_URL = https://github.com/PSP-Arkfive/TimeMachine/releases/download/latest/TM.zip
+TIMEMACHINE_PACKAGE = $(RESOURCE_DIR)/TM.PKG
 
 
 all: resources btcnf dc
 	mkdir -p dist/DC10
 	$(PYTHON) $(BUILDTOOLS)/pack/pack.py -p dist/DC10/DC10.ARK packlist.txt -s
 	cp Installer/EBOOT.PBP dist/DC10/
+	cp $(TIMEMACHINE_PACKAGE) dist/DC10/
 	cp $(ARK_DIR)/* dist/DC10/
 	cp $(LIBS_DIR)/idsregeneration.prx $(LIBS_DIR)/intraFont-vlf.prx $(LIBS_DIR)/iop.prx $(LIBS_DIR)/ipl_update.prx $(LIBS_DIR)/lflash_fdisk.prx $(LIBS_DIR)/libpsardumper.prx $(LIBS_DIR)/pspdecrypt.prx $(LIBS_DIR)/usbdevice.prx $(LIBS_DIR)/vlf.prx dist/DC10/
 	# DAM
 	cp -r MagicMemoryCreator dist/
+	cp $(TIMEMACHINE_PACKAGE) dist/MagicMemoryCreator/
 	mkdir dist/MagicMemoryCreator/TM/DCARK/ARK_01234
 	mkdir -p dist/MagicMemoryCreator/TM/DCARK/vsh/module/
 	cp btcnf/*.bin dist/MagicMemoryCreator/TM/DCARK/kd/
-	cp TimeMachine/tmctrl.prx dist/MagicMemoryCreator/TM/DCARK/
 	cp DCManager/dcman.prx dist/MagicMemoryCreator/TM/DCARK/kd/
 	cp VUnbricker/resurrection.prx dist/MagicMemoryCreator/TM/DCARK/vsh/module/
 	cp $(LIBS_DIR)/vlf.prx dist/MagicMemoryCreator/TM/DCARK/vsh/module/
@@ -51,6 +55,8 @@ resources:
 	unzip -p "$(CUSTOMIPL_ARCHIVE)" CustomIPL/CIPL.ARK > "$(ARK_DIR)/CIPL.ARK"
 	curl --fail --location --silent --show-error "$(LIBS_URL)" -o "$(LIBS_ARCHIVE)"
 	unzip -o "$(LIBS_ARCHIVE)" -d "$(LIBS_DIR)"
+	curl --fail --location --silent --show-error "$(TIMEMACHINE_URL)" -o "$(TIMEMACHINE_ARCHIVE)"
+	unzip -p "$(TIMEMACHINE_ARCHIVE)" PSP/GAME/TimeMachine/TM.PKG > "$(TIMEMACHINE_PACKAGE)"
 
 btcnf:
 	$(PYTHON) $(BUILDTOOLS)/btcnf.py build btcnf/pspbtcnf_dc.txt
@@ -66,16 +72,12 @@ dc:
 	$(MAKE) -C Installer
 	$(MAKE) -C DCManager
 	$(MAKE) -C VUnbricker
-	$(MAKE) -C TimeMachine/rebootex
-	$(MAKE) -C TimeMachine/
 
 
 clean:
 	$(MAKE) -C Installer clean
 	$(MAKE) -C DCManager clean
 	$(MAKE) -C VUnbricker clean
-	$(MAKE) -C TimeMachine/rebootex clean
-	$(MAKE) -C TimeMachine/ clean
 	rm -f btcnf/*.bin
 	rm -rf dist
 	rm -rf $(RESOURCE_DIR)

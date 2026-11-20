@@ -4,12 +4,13 @@ Latest version of the legendary unbricking tool for the Sony PSP.
 ## Building
 
 Run `make` to build the app. The build downloads the latest ARK-5, CustomIPL,
-and PSP dynamic library releases into `tmp/`; `make clean` removes these
+Time Machine, and PSP dynamic library releases into `tmp/`; `make clean` removes these
 downloaded files.
 
 ## Installation
 
 - Copy `DC10` to `/PSP/GAME/` on the Memory Stick. If you installed the Full variant of FasterARK then it should already be available on the PSP.
+- Keep `TM.PKG` in the DC10 folder, or use the copy in `/PSP/GAME/TimeMachine/`.
 - Download the latest 6.61 firmware, rename it to `661.PBP` or `661GO.PBP` (for PSP Go) and copy to your Memory Stick.
 
 ---
@@ -23,6 +24,9 @@ If running ARK-5 already and have networking enabled you can utilize: [661 OFW D
 
 - Run the app and let it install.
 - Use a recovery method such as `Pandora Battery`, `Baryon Sweeper` or `New cIPL` (booting the console with L trigger).
+
+The PC-based MagicMemoryCreator also requires the included `TM.PKG` alongside
+its scripts.
 
 
 ## Features
